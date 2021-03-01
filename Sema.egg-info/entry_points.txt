@@ -1,0 +1,3 @@
+[console_scripts]
+sema = command_line.menu:start
+
