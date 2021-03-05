@@ -1,42 +1,39 @@
 from common import moudle
-import os
 
 def start():
 
-    print('Welcome to sema setting maker\n')
+    print('\nWelcome to sema setting maker\n')
 
     while True:
-        choice = input("Enter '1' to edit a setting file\nEnter '2' for creating a new setting file\n"
-                       "Enter '3' to remove a setting file\nEnter 0 to exit\n\n->")
+        choice = input("Enter '1' to edit a setting file\nEnter '2' to create a new setting file\n"
+                       "Enter 0 to exit\n\n->").strip()
 
         if choice == '0' or choice == '':
             break;
 
         elif choice == '1':
-            print('Edit')
+            path = input('Enter the name of setting file you want to edit (can include path): ')
 
-        elif choice == '2':
-            path = input('Enter the file name ex. commands.cfg (can include path): ')
-
-            response = moudle.create_setting_file(path)
-
-            if response == 200:
-                print('Setting file created successfully')
+            if path != '':
                 moudle.edit(path)
 
-            elif response == 701:
-                print('File already exists')
-            elif response == 702:
-                print('setting.xml file already exists')
-            else:
-                print(response)
+        elif choice == '2':
+            path = input('Enter the file name (can include path): ')
 
-        elif choice == '3':
-            print('Remove')
+            if path != '':
+                response = moudle.create_setting_file(path)
+
+                if response == 200:
+                    print('\nSetting file created successfully')
+                    moudle.edit(path)
+
+                elif response == 701:
+                    print('\nFile already exists\n')
+                elif response == 702:
+                    print('\nsetting.xml file already exists\n')
+                else:
+                    print(response)
 
         else:
-            print('Command not found!')
-
-
-
+            print('\nCommand not found!\n')
 
