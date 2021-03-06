@@ -12,13 +12,13 @@ def start():
             break;
 
         elif choice == '1':
-            path = input('Enter the name of setting file you want to edit (can include path): ')
+            path = input('Enter the name of setting file you want to edit (can include path): ').strip()
 
             if path != '':
                 moudle.edit(path)
 
         elif choice == '2':
-            path = input('Enter the file name (can include path): ')
+            path = input('Enter the file name (can include path): ').strip()
 
             if path != '':
                 response = moudle.create_setting_file(path)
