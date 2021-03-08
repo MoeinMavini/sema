@@ -1,3 +1,4 @@
+from . import const
 import os
 import lxml.etree as ET
 
@@ -97,6 +98,9 @@ def get_setting_names_in_file(path_of_dot_setting):
 
 
 def add_setting_to_file(path_to_dot_setting, name, comment):
+    """Returns 200: Successful,
+       201: Definition for setting already exists in setting.xml file"""
+
     file = open(path_to_dot_setting, 'a')
 
     file.write('#' + comment + '\n' + name + ':\n')
@@ -116,11 +120,15 @@ def add_setting_to_file(path_to_dot_setting, name, comment):
         
         tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
 
-        print('\nSetting created successfully\n')
+        return 200
     else:
-        print('\nCaution: Definition for setting ' + name + ' already exists in setting.xml file\n')
+        return 201
+        
 
 def remove_setting_from_file(path_to_dot_setting, name):
+    """Returns 200: Successful,
+       201: Setting removed successfully but Setting didn't exist in setting.xml file
+            It causes no problem in removing but means that .setting.xml was corrupted."""
     file_r = open(path_to_dot_setting, 'r')
     file_temp = open(path_to_dot_setting + '.temp', 'w')
 
@@ -161,13 +169,15 @@ def remove_setting_from_file(path_to_dot_setting, name):
 
         tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
 
-        print('\nSetting removed successfully\n')
+        return 200
+        
     else:
-        print("\nCaution: Setting removed successfully but Setting '" + name + "' didn't exist in setting.xml file.\n"
-                "It causes no problem in removing but means that your .setting.xml was corrupted.\n")
+        return 201
 
 
 def change_setting_name(path_to_dot_setting, current_name, new_name):
+    """Returns 200: Successful,
+       201: Setting name was not found in .setting.xml file, file could be corrupted"""
     file_r = open(path_to_dot_setting, 'r')
     file_temp = open(path_to_dot_setting + '.temp', 'w')
 
@@ -220,7 +230,7 @@ def change_setting_name(path_to_dot_setting, current_name, new_name):
 
         tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
 
-        print('\nName changed successfully.\nCaution: Setting name was not found in .setting.xml file, file could be corrupted\n')
+        return 201
     
     else:
 
@@ -228,10 +238,12 @@ def change_setting_name(path_to_dot_setting, current_name, new_name):
 
         tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
 
-        print('\nName changed successfully.\n')
+        return 200
 
 
 def set_default(path_to_dot_setting, setting_name, default_value):
+    """Returns 200: Successful,
+       201: Setting name was not found in .setting.xml file, file could be corrupted"""
     file_r = open(path_to_dot_setting, 'r')
     file_temp = open(path_to_dot_setting + '.temp', 'w')
 
@@ -283,7 +295,7 @@ def set_default(path_to_dot_setting, setting_name, default_value):
 
         tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
 
-        print('\nDefault value set successfully.\nCaution: Setting name was not found in .setting.xml file, file could be corrupted\n')
+        return 201
     
     else:
 
@@ -291,10 +303,12 @@ def set_default(path_to_dot_setting, setting_name, default_value):
 
         tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
 
-        print('\nDefault value set successfully.\n')
+        return 200
 
 
 def set_setting_comment(path_to_dot_setting, setting_name, comment):
+    """Returns 200: Successful,
+       201: Setting name was not found in .setting.xml file, file could be corrupted"""
     file_r = open(path_to_dot_setting, 'r')
     file_temp = open(path_to_dot_setting + '.temp', 'w')
 
@@ -334,7 +348,7 @@ def set_setting_comment(path_to_dot_setting, setting_name, comment):
 
         tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
 
-        print('\nComment set successfully.\nCaution: Setting name was not found in .setting.xml file, file could be corrupted\n')
+        return 201
     
     else:
 
@@ -342,5 +356,67 @@ def set_setting_comment(path_to_dot_setting, setting_name, comment):
 
         tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
 
-        print('\nComment set successfully.\n')
+        return 200
 
+
+def set_file_description(path_to_dot_setting, description):
+
+    description_list = description.split('\n')
+
+    file_r = open(path_to_dot_setting, 'r')
+    file_temp = open(path_to_dot_setting + '.temp', 'w')
+
+    file_r_contents = file_r.readlines()
+
+    for i in range(const.RESERVE_LINES):
+            file_temp.write(file_r_contents[i])
+
+    for i in range(len(description_list)):
+            if description_list[i] == '\n':
+                continue
+            file_temp.write('#' + description_list[i] + '\n')
+
+    for i in range(get_file_description_line_num(path_to_dot_setting) + const.RESERVE_LINES , len(file_r_contents)):
+        file_temp.write(file_r_contents[i])
+            
+    file_r.close()
+    file_temp.close()
+
+    os.remove(path_to_dot_setting)
+    os.rename(path_to_dot_setting + '.temp', path_to_dot_setting)
+
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+
+    element = root.find("Description")
+
+    if element == None:
+        element = ET.Element("Description")
+        element.text = description
+        root.append(element)
+    
+    else:
+        element.text = description
+
+    tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
+
+    return 200
+
+
+def get_file_description_line_num(path_to_dot_setting):
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+
+    element = root.find("Description")
+
+    if element == None:
+        return 0
+    
+    else:
+        return len(element.text.split('\n'))

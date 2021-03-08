@@ -33,7 +33,14 @@ def start():
                 response = moudle.create_setting_file(path)
 
                 if response == 200:
+
+                    description = get_multiline_input('\nEnter any description you may have for this file')
+
+                    if description != '':
+                        moudle.set_file_description(path + '.setting', description)
+
                     print('\nSetting file created successfully')
+
                     edit(path + '.setting')
 
                 elif response == 701:
@@ -55,7 +62,7 @@ def edit(path_to_dot_setting):
     while True:
         choice = input("\nEnter '1' to edit a setting\nEnter '2' to add a new setting\n"
                         "Enter '3' to remove a setting\nEnter '4' to see the list of settings in current file\n"
-                        "Enter 0 to get back\n\n->").strip()
+                        "Enter '5' to set description for this file\nEnter 0 to get back\n\n->").strip()
 
         if choice == '0' or choice == '':
             break;
@@ -94,7 +101,12 @@ def edit(path_to_dot_setting):
                                 elif moudle.setting_exists_in_file(path, new_name):
                                     print('\nThis setting name already exists!\n')
                                 else:
-                                    moudle.change_setting_name(path, name, new_name)
+                                    response = moudle.change_setting_name(path, name, new_name)
+
+                                    if response == 200:
+                                        print('\nName changed successfully.\n')
+                                    elif response == 201:
+                                        print('\nName changed successfully.\nCaution: Setting name was not found in .setting.xml file, file could be corrupted\n')
                                     break
 
                         elif choice == '2':
@@ -108,8 +120,14 @@ def edit(path_to_dot_setting):
                                 elif value == '':
                                     break
                                 else:
-                                    moudle.set_default(path, name, value)
+                                    response = moudle.set_default(path, name, value)
+
+                                    if response == 200:
+                                        print('\nDefault value set successfully.\n')
+                                    elif response == 201:
+                                        print('\nDefault value set successfully.\nCaution: Setting name was not found in .setting.xml file, file could be corrupted\n')
                                     break
+
                         elif choice == '3':
                             while True:
                                 comment = input('Enter the comment: ').strip()
@@ -119,7 +137,13 @@ def edit(path_to_dot_setting):
                                 elif comment == '':
                                     break
                                 else:
-                                    moudle.set_setting_comment(path, name, comment)
+                                    response = moudle.set_setting_comment(path, name, comment)
+
+                                    if response == 200:
+                                        print('\nComment set successfully.\n')
+                                    elif response == 201:
+                                        print('\nComment set successfully.\nCaution: Setting name was not found in .setting.xml file, file could be corrupted\n')
+
                                     break
 
                         elif choice == '4':
@@ -150,7 +174,12 @@ def edit(path_to_dot_setting):
                         if '\n' in comment:
                             print("\nError: Comment includes new line\n")
                         else:
-                            moudle.add_setting_to_file(path, name, comment)
+                            response = moudle.add_setting_to_file(path, name, comment)
+
+                            if response == '200':
+                                print('\nSetting created successfully\n')
+                            elif response == 201:
+                                print('\nCaution: Definition for setting ' + name + ' already exists in setting.xml file\n')
                             break
                 break
 
@@ -167,11 +196,43 @@ def edit(path_to_dot_setting):
                 elif not moudle.setting_exists_in_file(path, name):
                     print('\nSetting with this name does not exist!\n')
                 else:
-                    moudle.remove_setting_from_file(path, name)
+                    response = moudle.remove_setting_from_file(path, name)
+
+                    if respose == 200:
+                        print('\nSetting removed successfully\n')
+                    elif response == 201:
+                        print("\nCaution: Setting removed successfully but Setting '" + name + "' didn't exist in setting.xml file.\n"
+                            "It causes no problem in removing but means that your .setting.xml was corrupted.\n")
                     break
 
         elif choice == '4':
             print('\nThis file contains these settings: ' + str(moudle.get_setting_names_in_file(path)))
 
+        elif choice == '5':
+            description = get_multiline_input('\nEnter any description you may have for this file')
+
+            if description != '':
+                        moudle.set_file_description(path, description)
+            
+            print('\nDescription changed successfully\n')
+
         else:
             print('\nCommand not found!\n')
+
+
+def get_multiline_input(prompt):
+    
+    print(prompt + '\n***To end input, write nothing just press Enter (New line)***\n')
+
+    content = ''
+
+    while True:
+        temp = input(':')
+
+        if temp == '':
+            break
+        else:
+            content += temp + '\n'
+    
+    return content[:-1]
+
