@@ -37,78 +37,6 @@ def create_setting_file(path):
         return e
 
 
-def edit(path):
-
-    verfy_result = verfy_file(path)
-
-    if verfy_result == 700:
-        print('\nChosen file is not a setting maker file\nFile must have .setting extension with a .setting.xml file in the same directory\n')
-    elif verfy_result == 701:
-        print('\n.setting file missing! Both .setting and .setting.xml are required\n')
-    elif verfy_result == 702:
-        print('\n.setting.xml file missing! Both .setting and .setting.xml are required\n')
-    else:
-        path = verfy_result
-
-        print('\nThis file contains this settings: ' + str(get_setting_names_in_file(path)))
-
-        while True:
-            choice = input("\nEnter '1' to edit a setting\nEnter '2' to add a new setting\n"
-                           "Enter '3' to remove a setting\nEnter '4' to see the list of settings in current file\n"
-                           "Enter 0 to get back\n\n->").strip()
-
-            if choice == '0' or choice == '':
-                break;
-
-            elif choice == '1':
-                pass
-
-            elif choice == '2':
-                while True:
-                    name = input('Enter the setting name: ').strip()
-
-                    if ':' in name:
-                        print("\nName must not contain ':'\n")
-                    elif '\n' in name:
-                        print("\nError: Name includes new line\n")
-                    elif name == '':
-                        break
-                    elif setting_exists_in_file(path, name):
-                        print('\nThis setting name already exists!\n')
-                    else:
-                        while True:
-                            comment = input('Enter the single line comment for setting: ').strip()
-
-                            if '\n' in comment:
-                                print("\nError: Comment includes new line\n")
-                            else:
-                                add_setting_to_file(path, name, comment)
-                                break
-                    break
-
-            elif choice == '3':
-                while True:
-                    name = input('Enter the setting name: ').strip()
-
-                    if ':' in name:
-                        print("\nName must not contain ':'\n")
-                    elif '\n' in name:
-                        print("\nError: Name includes new line\n")
-                    elif name == '':
-                        break
-                    elif not setting_exists_in_file(path, name):
-                        print('\nSetting with this name does not exist!\n')
-                    else:
-                        remove_setting_from_file(path, name)
-                        break
-
-            elif choice == '4':
-                print('\nThis file contains this settings: ' + str(get_setting_names_in_file(path)))
-
-            else:
-                print('\nCommand not found!\n')
-
-
 def verfy_file(path):
     """Verfies that path has .setting and .setting.xml file for the given file name.
     
@@ -145,7 +73,7 @@ def setting_exists_in_file(path_of_dot_setting, name):
     for line in file.readlines():
         if line[0] == '#' or line[0] == ' ' or line[0] == '\n':
             pass
-        elif name.upper().strip() + ':' in line.upper().strip():
+        elif name.upper().strip() == line[:line.find(':')].upper().strip():
             return True
 
     return False
@@ -175,13 +103,16 @@ def add_setting_to_file(path_to_dot_setting, name, comment):
 
     file.close()
 
-    tree = ET.parse(path_to_dot_setting + '.xml')
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
 
     root = tree.getroot()
                       
-    if root.find("setting[@name='" + name.lower() + "']") == None:#Test
-        element = ET.Element("setting", name=name.lower())#Test
-        root.append(element)#Test
+    if root.find("setting[@name='" + name.lower() + "']") == None:
+        element = ET.Element("setting", name=name.lower())
+        element.text = comment
+        root.append(element)
         
         tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
 
@@ -203,8 +134,8 @@ def remove_setting_from_file(path_to_dot_setting, name):
             continue
         elif file_r_contents[i][0] == ' ' or file_r_contents[i][0] == '\n':
             pass
-        elif file_r_contents[i][0] == '#':
-            if name.upper().strip() + ':' in file_r_contents[i+1].upper().strip():
+        elif file_r_contents[i][0] == '#' and file_r_contents[i+1][0] != '#':
+            if name.upper().strip() == file_r_contents[i+1][:file_r_contents[i+1].find(':')].upper().strip():
                 skip = True
             else:
                 file_temp.write(file_r_contents[i])
@@ -217,19 +148,199 @@ def remove_setting_from_file(path_to_dot_setting, name):
     os.remove(path_to_dot_setting)
     os.rename(path_to_dot_setting + '.temp', path_to_dot_setting)
 
-    tree = ET.parse(path_to_dot_setting + '.xml')
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
 
     root = tree.getroot()
     
-    element = root.find("setting[@name='" + name.lower().strip() + "']")#Test
+    element = root.find("setting[@name='" + name.lower().strip() + "']")
 
-    if element != None:#Test
-        root.remove(element)#Test
+    if element != None:
+        root.remove(element)
 
         tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
 
         print('\nSetting removed successfully\n')
     else:
-        print('\nCaution: Setting removed successfully but Setting ' + name + " didn't exists in setting.xml file.\n"
+        print("\nCaution: Setting removed successfully but Setting '" + name + "' didn't exist in setting.xml file.\n"
                 "It causes no problem in removing but means that your .setting.xml was corrupted.\n")
+
+
+def change_setting_name(path_to_dot_setting, current_name, new_name):
+    file_r = open(path_to_dot_setting, 'r')
+    file_temp = open(path_to_dot_setting + '.temp', 'w')
+
+    for line in file_r.readlines():
+        if line[0] == ' ' or line[0] == '\n':
+            pass
+        elif current_name.upper().strip() == line[:line.find(':')].upper().strip() and line[0] != '#':
+            file_temp.write(new_name.strip() + line[line.find(':'):])
+        else:
+            file_temp.write(line)
+
+    file_r.close()
+    file_temp.close()
+
+    os.remove(path_to_dot_setting)
+    os.rename(path_to_dot_setting + '.temp', path_to_dot_setting)
+
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+    
+    element = root.find("setting[@name='" + new_name.lower().strip() + "']")
+
+    if element != None:
+        root.remove(element)
+
+    element = root.find("setting[@name='" + current_name.lower().strip() + "']")
+
+    if element == None:#This can only happen if .xml file is altered manually
+
+        file_r = open(path_to_dot_setting, 'r')
+
+        file_r_contents = file_r.readlines()
+        
+        comment = ''
+
+        for i in range(len(file_r_contents)):
+            if file_r_contents[i][0] == '#' and file_r_contents[i+1][0] != '#':
+                if new_name.upper().strip() == file_r_contents[i+1][:file_r_contents[i+1].find(':')].upper().strip():
+                    comment = file_r_contents[i][1:].replace('\n', '')
+                    break
+
+        file_r.close()
+
+        element = ET.Element("setting", name=new_name.lower().strip())
+        element.text = comment
+        root.append(element)
+
+        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
+
+        print('\nName changed successfully.\nCaution: Setting name was not found in .setting.xml file, file could be corrupted\n')
+    
+    else:
+
+        element.attrib['name'] = new_name.lower()
+
+        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
+
+        print('\nName changed successfully.\n')
+
+
+def set_default(path_to_dot_setting, setting_name, default_value):
+    file_r = open(path_to_dot_setting, 'r')
+    file_temp = open(path_to_dot_setting + '.temp', 'w')
+
+    for line in file_r.readlines():
+        if line[0] == ' ' or line[0] == '\n':
+            pass
+        elif setting_name.upper().strip() == line[:line.find(':')].upper().strip() and line[0] != '#':
+            if line.split(':')[1].strip() == '':
+                file_temp.write(line[:line.find(':')] + ':' + default_value + '\n')
+            else:
+                file_temp.write(line)
+        else:
+            file_temp.write(line)
+
+    file_r.close()
+    file_temp.close()
+
+    os.remove(path_to_dot_setting)
+    os.rename(path_to_dot_setting + '.temp', path_to_dot_setting)
+
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+    
+    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+
+    if element == None:#This can only happen if .xml file is altered manually
+
+        file_r = open(path_to_dot_setting, 'r')
+
+        file_r_contents = file_r.readlines()
+        
+        comment = ''
+
+        for i in range(len(file_r_contents)):
+            if file_r_contents[i][0] == '#' and file_r_contents[i+1][0] != '#':
+                if setting_name.upper().strip() == file_r_contents[i+1][:file_r_contents[i+1].find(':')].upper().strip():
+                    comment = file_r_contents[i][1:].replace('\n', '')
+                    break
+
+        file_r.close()
+
+        element = ET.Element("setting", name=setting_name.lower().strip())
+        element.attrib['default']=default_value
+        element.text = comment
+        root.append(element)
+
+        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
+
+        print('\nDefault value set successfully.\nCaution: Setting name was not found in .setting.xml file, file could be corrupted\n')
+    
+    else:
+
+        element.attrib['default'] = default_value
+
+        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
+
+        print('\nDefault value set successfully.\n')
+
+
+def set_setting_comment(path_to_dot_setting, setting_name, comment):
+    file_r = open(path_to_dot_setting, 'r')
+    file_temp = open(path_to_dot_setting + '.temp', 'w')
+
+    file_r_contents = file_r.readlines()
+
+    for i in range(len(file_r_contents)):
+        if file_r_contents[i][0] == '#' and file_r_contents[i+1][0] != '#':
+            if setting_name.upper().strip() == file_r_contents[i+1][:file_r_contents[i+1].find(':')].upper().strip():
+                file_temp.write('#' + comment + '\n')
+
+            else:
+                file_temp.write(file_r_contents[i])
+        
+        else:
+            file_temp.write(file_r_contents[i])
+
+
+    file_r.close()
+    file_temp.close()
+
+    os.remove(path_to_dot_setting)
+    os.rename(path_to_dot_setting + '.temp', path_to_dot_setting)
+
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+    
+    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+
+    if element == None:#This can only happen if .xml file is altered manually
+
+        element = ET.Element("setting", name=setting_name.lower().strip())
+        element.text = comment
+        root.append(element)
+
+        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
+
+        print('\nComment set successfully.\nCaution: Setting name was not found in .setting.xml file, file could be corrupted\n')
+    
+    else:
+
+        element.text = comment
+
+        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
+
+        print('\nComment set successfully.\n')
 
