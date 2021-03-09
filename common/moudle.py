@@ -376,7 +376,7 @@ def set_file_description(path_to_dot_setting, description):
                 continue
             file_temp.write('#' + description_list[i] + '\n')
 
-    for i in range(get_file_description_line_num(path_to_dot_setting) + const.RESERVE_LINES , len(file_r_contents)):
+    for i in range(get_file_description_lines_num(path_to_dot_setting) + const.RESERVE_LINES , len(file_r_contents)):
         file_temp.write(file_r_contents[i])
             
     file_r.close()
@@ -406,7 +406,7 @@ def set_file_description(path_to_dot_setting, description):
     return 200
 
 
-def get_file_description_line_num(path_to_dot_setting):
+def get_file_description_lines_num(path_to_dot_setting):
     parser = ET.XMLParser(remove_blank_text=True)
 
     tree = ET.parse(path_to_dot_setting + '.xml', parser)
@@ -420,3 +420,131 @@ def get_file_description_line_num(path_to_dot_setting):
     
     else:
         return len(element.text.split('\n'))
+
+
+def add_simple_value(path_to_dot_setting, setting_name, value, comment):
+    """Returns 200: Successful,
+       700: Setting not found in .xml file"""
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+
+    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+
+    if element == None:
+        return 700
+    
+    else:
+
+        sub_element = ET.Element("value", name=value.lower().strip())
+        sub_element.text = comment
+
+        element.append(sub_element)
+
+        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
+
+        return 200
+
+
+def add_range_value(path_to_dot_setting, setting_name, min, max, step, comment):
+    """Returns 200: Successful,
+       700: Setting not found in .xml file
+       701: Min is not a number
+       702: Max is not a number
+       703: step is not a number
+       704: all are empty"""
+
+    if min == max == step == '':
+        return 704
+
+    if min != '':
+        try:
+            float(min)
+        except:
+            return 701
+    
+    if max != '':
+        try:
+            float(max)
+        except:
+            return 702
+
+    if step != '':
+        try:
+            float(step)
+        except:
+            return 703
+
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+
+    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+
+    if element == None:
+        return 700
+    
+    else:
+
+        sub_element = ET.Element("range")
+        sub_element.attrib['min'] = min
+        sub_element.attrib['max'] = max
+        sub_element.attrib['step'] = step
+        sub_element.text = comment
+
+        element.append(sub_element)
+
+        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
+
+        return 200
+
+
+def setting_simple_value_exists(path_to_dot_setting, setting_name, value):
+    
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+
+    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+
+    if element == None:
+        return False
+    
+    else:
+
+        sub_element = element.find("value[@name='" + value.lower().strip() + "']")
+
+        if sub_element == None:
+            return False
+        else:
+            return True
+
+
+def setting_renage_value_exists(path_to_dot_setting, setting_name, min, max, step):
+    
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+
+    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+
+    if element == None:
+        return False
+    
+    else:
+
+        sub_element = element.find("range[@min='" + min.lower().strip() + "'][@max='" + max.lower().strip() + "'][@step='" + step.lower().strip() + "']")
+
+        if sub_element == None:
+            return False
+        else:
+            return True
+

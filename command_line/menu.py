@@ -147,7 +147,124 @@ def edit(path_to_dot_setting):
                                     break
 
                         elif choice == '4':
-                            pass
+                            #TODO show values csv like with number
+                            while True:
+                                choice = input("\nEnter '1' to add a value\nEnter '2' to edit a value\n"
+                                "Enter '3' to remove a values\nEnter '4' to see a list of current values\n"
+                                "Enter 0 to get back\n\n->").strip()
+
+                                if choice == '0' or choice == '':
+                                    break;
+
+                                elif choice == '1':
+                                    while True:
+                                        choice = input("\nEnter '1' for simple value\nEnter '2' for number range value\n"
+                                        "Enter 0 to get back\n\n->")
+
+                                        if choice == '0' or choice == '':
+                                            break;
+
+                                        elif choice == '1':
+                                            while True:
+                                                value = input('Enter the value: ').strip()
+
+                                                if ':' in value:
+                                                    print("\nValue must not contain ':'\n")
+                                                elif '\n' in value:
+                                                    print("\nError: Value includes new line\n")
+                                                elif name == '':
+                                                    break
+                                                elif moudle.setting_simple_value_exists(path, name, value):
+                                                    print('\nThis value already exists!\n')
+                                                else:
+                                                    while True:
+                                                        comment = input('Enter the single line comment for setting: ').strip()
+
+                                                        if '\n' in comment:
+                                                            print("\nError: Comment includes new line\n")
+                                                        else:
+                                                            response = moudle.add_simple_value(path, name, value, comment)
+
+                                                            if response == 200:
+                                                                print('\nValue added successfully\n')
+                                                            else:
+                                                                print('\nSome error occured\n')
+                                                            break
+                                                    break
+
+                                        elif choice == '2':
+                                            while True:
+                                                min = input('Enter the minimum (Enter nothing to skip): ').strip()
+
+                                                if min == '':
+                                                    break
+
+                                                try:
+                                                    float(min)
+                                                    break
+                                                except:
+                                                    print('\n' + min + ' is not a number!\n')
+                                                
+                                            while True:
+                                                max = input('Enter the maximum (Enter nothing to skip): ').strip()
+
+                                                if max == '':
+                                                    break
+
+                                                try:
+                                                    float(max)
+                                                    break
+                                                except:
+                                                    print('\n' + max + ' is not a number!\n')
+                                                
+                                            while True:
+                                                step = input('Enter the step (Enter nothing to skip): ').strip()
+
+                                                if step == '':
+                                                    break
+
+                                                try:
+                                                    float(step)
+                                                    break
+                                                except:
+                                                    print('\n' + step + ' is not a number!\n')
+
+                                            if min == max == step == '':
+                                                continue
+
+                                            elif moudle.setting_renage_value_exists(path, name, min, max, step):
+                                                    print('\nThis range is already added!\n')
+                                            else:
+                                                while True:
+                                                    comment = input('Enter the single line comment for setting: ').strip()
+
+                                                    if '\n' in comment:
+                                                        print("\nError: Comment includes new line\n")
+                                                    else:
+                                                        response = moudle.add_range_value(path, name, min, max, step, comment)
+
+                                                        if response == 200:
+                                                            print('\nRange added successfully\n')
+                                                        else:
+                                                            print('\nSome error occured\n')
+                                                        break
+
+                                        else:
+                                            print('\nCommand not found!\n')
+
+                                elif choice == '2':
+                                    #TODO Ask number and get comment
+                                    pass
+
+                                elif choice == '3':
+                                    #TODO Ask number and get comment
+                                    pass
+
+                                elif choice == '4':
+                                    pass
+
+                                else:
+                                    print('\nCommand not found!\n')
 
                         else:
                                 print('\nCommand not found!\n')
