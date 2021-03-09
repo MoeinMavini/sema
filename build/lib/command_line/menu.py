@@ -147,7 +147,8 @@ def edit(path_to_dot_setting):
                                     break
 
                         elif choice == '4':
-                            #TODO show values csv like with number
+                            show_setting_values(path, name)
+
                             while True:
                                 choice = input("\nEnter '1' to add a value\nEnter '2' to edit a value\n"
                                 "Enter '3' to remove a values\nEnter '4' to see a list of current values\n"
@@ -253,15 +254,181 @@ def edit(path_to_dot_setting):
                                             print('\nCommand not found!\n')
 
                                 elif choice == '2':
-                                    #TODO Ask number and get comment
-                                    pass
+                                    number_of_values = len(moudle.get_setting_values(path, name))
+
+                                    if number_of_values == 0:
+                                        print('\nSetting has no values\n')
+                                    else:
+                                        choice = input('\nEnter the number of value you want to edit (1 to ' + str(number_of_values) + '): ').strip()
+
+                                        if choice.isdecimal():
+                                            choice = int(choice)
+
+                                            if choice < 1 or choice > number_of_values:
+                                                print('\nNumber is not in range\n')
+                                            else:
+
+                                                while True:
+                                                    action = input("\nEnter '1' set comment\nEnter '2' edit value\n"
+                                                    "Enter 0 to get back\n\n->")
+
+                                                    if action == '0' or action == '':
+                                                        break;
+
+                                                    elif action == '1':
+                                                        while True:
+                                                            comment = input('Enter the single line comment for setting: ').strip()
+
+                                                            if '\n' in comment:
+                                                                print("\nError: Comment includes new line\n")
+                                                            else:
+                                                                response = moudle.set_value_comment_by_number(path, name, choice-1, comment)
+
+                                                                if response == 200:
+                                                                    print('\nCommented is set\n')
+                                                                else:
+                                                                    print('\nSome error occured\n')
+                                                                break
+
+                                                    elif action == '2':
+                                                        value = moudle.get_value_by_number(path, name, choice-1)
+                                                        
+                                                        if 'min' in value:
+                                                            while True:
+                                                                action = input("\nEnter '1' to set min\nEnter '2' to set max\nEnter '3' to set step\n"
+                                                                "Enter 0 to get back\n\n->").strip()
+
+                                                                if action == '0' or action == '':
+                                                                    break;
+
+                                                                elif action == '1':
+                                                                    while True:
+                                                                        min = input('Enter the min (Enter nothing for empty): ').strip()
+
+                                                                        if min != '':
+                                                                            try:
+                                                                                float(min)
+                                                                            except:
+                                                                                print('\n' + min + ' is not a number!\n')
+                                                                                continue
+
+                                                                        if min == value['max'] == value['step'] == '':
+                                                                            print('\nCannot have min, max and step empty\n')
+
+                                                                        elif moudle.setting_renage_value_exists(path, name, min, value['max'], value['step']):
+                                                                                print('\nThis range is already added!\n')
+                                                                        else:
+                                                                            response = moudle.set_ranged_value_by_number(path, name, choice-1, min, value['max'], value['step'])
+
+                                                                            if response == 200:
+                                                                                print('\nValue is set\n')
+                                                                            else:
+                                                                                print('\nSome error occured\n')
+                                                                            break
+                                                                    break
+                                                                elif action == '2':
+                                                                    while True:
+                                                                        max = input('Enter the max (Enter nothing for empty): ').strip()
+
+                                                                        if max != '':
+                                                                            try:
+                                                                                float(max)
+                                                                            except:
+                                                                                print('\n' + max + ' is not a number!\n')
+                                                                                continue
+
+                                                                        if value['min'] == max == value['step'] == '':
+                                                                            print('\nCannot have min, max and step empty\n')
+
+                                                                        elif moudle.setting_renage_value_exists(path, name, value['min'], max, value['step']):
+                                                                                print('\nThis range is already added!\n')
+                                                                        else:
+                                                                            response = moudle.set_ranged_value_by_number(path, name, choice-1, value['min'], max, value['step'])
+
+                                                                            if response == 200:
+                                                                                print('\nValue is set\n')
+                                                                            else:
+                                                                                print('\nSome error occured\n')
+                                                                            break
+                                                                    break
+                                                                elif action == '3':
+                                                                    while True:
+                                                                        step = input('Enter the step (Enter nothing for empty): ').strip()
+
+                                                                        if step != '':
+                                                                            try:
+                                                                                float(step)
+                                                                            except:
+                                                                                print('\n' + step + ' is not a number!\n')
+                                                                                continue
+
+                                                                        if value['min'] == value['max'] == step == '':
+                                                                            print('\nCannot have min, max and step empty\n')
+
+                                                                        elif moudle.setting_renage_value_exists(path, name, value['min'], value['max'], step):
+                                                                                print('\nThis range is already added!\n')
+                                                                        else:
+                                                                            response = moudle.set_ranged_value_by_number(path, name, choice-1, value['min'], value['max'], step)
+
+                                                                            if response == 200:
+                                                                                print('\nValue is set\n')
+                                                                            else:
+                                                                                print('\nSome error occured\n')
+                                                                            break
+                                                                    break
+                                                                else:
+                                                                    print('\nCommand not found!\n')
+
+                                                        elif 'name' in value:
+                                                            while True:
+                                                                value = input('Enter the new value: ').strip()
+
+                                                                if ':' in value:
+                                                                    print("\nValue must not contain ':'\n")
+                                                                elif '\n' in value:
+                                                                    print("\nError: Value includes new line\n")
+                                                                elif name == '':
+                                                                    break
+                                                                elif moudle.setting_simple_value_exists(path, name, value):
+                                                                    print('\nThis value already exists!\n')
+                                                                else:
+                                                                    response = moudle.set_simple_value_by_number(path, name, choice-1, value)
+
+                                                                    if response == 200:
+                                                                        print('\nName has changed\n')
+                                                                    else:
+                                                                        print('\nSome error occured\n')
+                                                                    break
+                                                            break
+                                                    else:
+                                                        print('\nCommand not found!\n')
+
+                                        else:
+                                            print('\nInput must be a number\n')
 
                                 elif choice == '3':
-                                    #TODO Ask number and get comment
-                                    pass
+
+                                    number_of_values = len(moudle.get_setting_values(path, name))
+
+                                    if number_of_values == 0:
+                                        print('\nSetting has no values\n')
+                                    else:
+                                        choice = input('\nEnter the number of value you want to be removed (1 to ' + str(number_of_values) + '): ').strip()
+
+                                        if choice.isdecimal():
+                                            choice = int(choice)
+
+                                            if choice < 1 or choice > number_of_values:
+                                                print('\nNumber is not in range\n')
+                                            else:
+                                                moudle.remove_value_by_number(path, name, choice-1)
+                                                print('\nValue removed successfully\n')
+
+                                        else:
+                                            print('\nInput must be a number\n')
 
                                 elif choice == '4':
-                                    pass
+                                    show_setting_values(path, name)
 
                                 else:
                                     print('\nCommand not found!\n')
@@ -353,3 +520,12 @@ def get_multiline_input(prompt):
     
     return content[:-1]
 
+
+def show_setting_values(path_to_dot_setting, setting_name):
+    print('\nCurrent values are: ', end ="" )
+    i = 1
+    for value in moudle.get_setting_values(path_to_dot_setting, setting_name):
+        print(str(i) + '.' + value, end =", " )
+        i += 1
+
+    print('\n')

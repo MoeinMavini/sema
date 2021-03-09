@@ -548,3 +548,211 @@ def setting_renage_value_exists(path_to_dot_setting, setting_name, min, max, ste
         else:
             return True
 
+
+def get_setting_values(path_to_dot_setting, setting_name):
+    """Returns a list of all values including ranged values"""
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+
+    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+    
+    value_list = []
+
+    if element == None:
+        return []
+
+    for e in element.iter():
+        if e.tag == 'value':
+            value_list.append(e.attrib['name'])
+        elif e.tag == 'range':
+            min = 'Unlimited'
+
+            if e.attrib['min'] != '':
+                min = e.attrib['min']
+
+            max = 'Unlimited'
+
+            if e.attrib['max'] != '':
+                max = e.attrib['max']
+               
+            step = ''
+            if e.attrib['step'] != '':
+                step = ' Step: ' + e.attrib['step']
+
+            value_list.append(min + ' To ' + max + step)
+
+    return value_list
+
+
+def remove_value_by_number(path_to_dot_setting, setting_name, number_from_zero):
+    """Removes a value from a setting by it's position in .xml file
+       Return: 200 on success
+               700 on setting not found
+               701 number don't exist"""
+
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+
+    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+
+    if element == None:
+        return 700
+
+    if number_from_zero < 0:
+        return 701
+
+    if len(element.getchildren()) >= number_from_zero+1:
+       
+        element.remove(element.getchildren()[number_from_zero])
+
+        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
+        
+        return 200
+
+    else:
+        return 701
+
+
+def get_value_by_number(path_to_dot_setting, setting_name, number_from_zero):
+    """Returns a value from setting by it's position in .xml file
+       If value is simple returns {'value':value, 'comment':comment}
+       If value is range returns {'min':value, 'max':value, 'step':value,'comment':comment}
+       700 on setting not found
+       701 number don't exist"""
+
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+
+    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+
+    if element == None:
+        return 700
+
+    if number_from_zero < 0:
+        return 701
+
+    if len(element.getchildren()) >= number_from_zero+1:
+        
+        value_element = element.getchildren()[number_from_zero]
+
+        if value_element.tag == 'value':
+            return {'name':value_element.attrib['name'], 'comment':value_element.text}
+        elif value_element.tag == 'range':
+            return {'min':value_element.attrib['min'], 'max':value_element.attrib['max'], 'step':value_element.attrib['step'],'comment':value_element.text}
+    else:
+        return 701
+
+
+def set_value_comment_by_number(path_to_dot_setting, setting_name, number_from_zero, comment):
+    """Sets a comment for a value in setting by it's position in .xml file
+       Return: 200 on success
+               700 on setting not found
+               701 number don't exist"""
+
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+
+    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+
+    if element == None:
+        return 700
+
+    if number_from_zero < 0:
+        return 701
+
+    if len(element.getchildren()) >= number_from_zero+1:
+        
+        element.getchildren()[number_from_zero].text = comment
+
+        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
+
+        return 200
+        
+    else:
+        return 701
+
+
+def set_simple_value_by_number(path_to_dot_setting, setting_name, number_from_zero, new_name):
+    """Sets name for a simple value in setting by it's position in .xml file
+       Return: 200 on success
+               700 on setting not found
+               701 number don't exist"""
+
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+
+    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+
+    if element == None:
+        return 700
+
+    if number_from_zero < 0:
+        return 701
+
+    if len(element.getchildren()) >= number_from_zero+1:
+        
+        element.getchildren()[number_from_zero].attrib['name'] = new_name
+
+        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
+
+        return 200
+        
+    else:
+        return 701
+
+
+def set_ranged_value_by_number(path_to_dot_setting, setting_name, number_from_zero, min, max, step):
+    """Sets values for a ranged value in setting by it's position in .xml file
+       Return: 200 on success
+               700 on setting not found
+               701 number don't exist
+               703 Can't have 3 empty values"""
+
+
+    if min == max == step == '':
+        return 703
+
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+
+    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+
+    if element == None:
+        return 700
+
+    if number_from_zero < 0:
+        return 701
+
+    if len(element.getchildren()) >= number_from_zero+1:
+        
+        range_element = element.getchildren()[number_from_zero]
+       
+        range_element.attrib['min'] = min
+        range_element.attrib['max'] = max
+        range_element.attrib['step'] = step
+
+        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
+
+        return 200
+        
+    else:
+        return 701
+
