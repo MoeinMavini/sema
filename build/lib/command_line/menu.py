@@ -1,4 +1,4 @@
-from common import moudle
+from common import module
 
 def start():
 
@@ -15,7 +15,7 @@ def start():
             path = input('Enter the name of setting file you want to edit (can include path): ').strip()
 
             if path != '':
-                verfy_result = moudle.verfy_file(path)
+                verfy_result = module.verfy_file(path)
 
                 if verfy_result == 700:
                     print('\nChosen file is not a setting maker file\nFile must have .setting extension with a .setting.xml file in the same directory\n')
@@ -30,14 +30,14 @@ def start():
             path = input('Enter the file name (can include path): ').strip()
 
             if path != '':
-                response = moudle.create_setting_file(path)
+                response = module.create_setting_file(path)
 
                 if response == 200:
 
                     description = get_multiline_input('\nEnter any description you may have for this file')
 
                     if description != '':
-                        moudle.set_file_description(path + '.setting', description)
+                        module.set_file_description(path + '.setting', description)
 
                     print('\nSetting file created successfully')
 
@@ -57,7 +57,7 @@ def start():
 def edit(path_to_dot_setting):
     path = path_to_dot_setting
 
-    print('\nThis file contains these settings: ' + str(moudle.get_setting_names_in_file(path)))
+    print('\nThis file contains these settings: ' + str(module.get_setting_names_in_file(path)))
 
     while True:
         choice = input("\nEnter '1' to edit a setting\nEnter '2' to add a new setting\n"
@@ -77,7 +77,7 @@ def edit(path_to_dot_setting):
                     print("\nError: Name includes new line\n")
                 elif name == '':
                     break
-                elif not moudle.setting_exists_in_file(path, name):
+                elif not module.setting_exists_in_file(path, name):
                     print('\nSetting not found!\n')
                 else:
                     while True:
@@ -98,10 +98,10 @@ def edit(path_to_dot_setting):
                                     print("\nError: Name includes new line\n")
                                 elif new_name == '':
                                     break
-                                elif moudle.setting_exists_in_file(path, new_name):
+                                elif module.setting_exists_in_file(path, new_name):
                                     print('\nThis setting name already exists!\n')
                                 else:
-                                    response = moudle.change_setting_name(path, name, new_name)
+                                    response = module.change_setting_name(path, name, new_name)
 
                                     if response == 200:
                                         print('\nName changed successfully.\n')
@@ -120,7 +120,7 @@ def edit(path_to_dot_setting):
                                 elif value == '':
                                     break
                                 else:
-                                    response = moudle.set_default(path, name, value)
+                                    response = module.set_default(path, name, value)
 
                                     if response == 200:
                                         print('\nDefault value set successfully.\n')
@@ -137,7 +137,7 @@ def edit(path_to_dot_setting):
                                 elif comment == '':
                                     break
                                 else:
-                                    response = moudle.set_setting_comment(path, name, comment)
+                                    response = module.set_setting_comment(path, name, comment)
 
                                     if response == 200:
                                         print('\nComment set successfully.\n')
@@ -175,7 +175,7 @@ def edit(path_to_dot_setting):
                                                     print("\nError: Value includes new line\n")
                                                 elif name == '':
                                                     break
-                                                elif moudle.setting_simple_value_exists(path, name, value):
+                                                elif module.setting_simple_value_exists(path, name, value):
                                                     print('\nThis value already exists!\n')
                                                 else:
                                                     while True:
@@ -184,7 +184,7 @@ def edit(path_to_dot_setting):
                                                         if '\n' in comment:
                                                             print("\nError: Comment includes new line\n")
                                                         else:
-                                                            response = moudle.add_simple_value(path, name, value, comment)
+                                                            response = module.add_simple_value(path, name, value, comment)
 
                                                             if response == 200:
                                                                 print('\nValue added successfully\n')
@@ -233,7 +233,7 @@ def edit(path_to_dot_setting):
                                             if min == max == step == '':
                                                 continue
 
-                                            elif moudle.setting_renage_value_exists(path, name, min, max, step):
+                                            elif module.setting_renage_value_exists(path, name, min, max, step):
                                                     print('\nThis range is already added!\n')
                                             else:
                                                 while True:
@@ -242,7 +242,7 @@ def edit(path_to_dot_setting):
                                                     if '\n' in comment:
                                                         print("\nError: Comment includes new line\n")
                                                     else:
-                                                        response = moudle.add_range_value(path, name, min, max, step, comment)
+                                                        response = module.add_range_value(path, name, min, max, step, comment)
 
                                                         if response == 200:
                                                             print('\nRange added successfully\n')
@@ -254,7 +254,7 @@ def edit(path_to_dot_setting):
                                             print('\nCommand not found!\n')
 
                                 elif choice == '2':
-                                    number_of_values = len(moudle.get_setting_values(path, name))
+                                    number_of_values = len(module.get_setting_values(path, name))
 
                                     if number_of_values == 0:
                                         print('\nSetting has no values\n')
@@ -267,7 +267,6 @@ def edit(path_to_dot_setting):
                                             if choice < 1 or choice > number_of_values:
                                                 print('\nNumber is not in range\n')
                                             else:
-
                                                 while True:
                                                     action = input("\nEnter '1' set comment\nEnter '2' edit value\n"
                                                     "Enter 0 to get back\n\n->")
@@ -282,7 +281,7 @@ def edit(path_to_dot_setting):
                                                             if '\n' in comment:
                                                                 print("\nError: Comment includes new line\n")
                                                             else:
-                                                                response = moudle.set_value_comment_by_number(path, name, choice-1, comment)
+                                                                response = module.set_value_comment_by_number(path, name, choice-1, comment)
 
                                                                 if response == 200:
                                                                     print('\nCommented is set\n')
@@ -291,7 +290,7 @@ def edit(path_to_dot_setting):
                                                                 break
 
                                                     elif action == '2':
-                                                        value = moudle.get_value_by_number(path, name, choice-1)
+                                                        value = module.get_value_by_number(path, name, choice-1)
                                                         
                                                         if 'min' in value:
                                                             while True:
@@ -315,10 +314,10 @@ def edit(path_to_dot_setting):
                                                                         if min == value['max'] == value['step'] == '':
                                                                             print('\nCannot have min, max and step empty\n')
 
-                                                                        elif moudle.setting_renage_value_exists(path, name, min, value['max'], value['step']):
+                                                                        elif module.setting_renage_value_exists(path, name, min, value['max'], value['step']):
                                                                                 print('\nThis range is already added!\n')
                                                                         else:
-                                                                            response = moudle.set_ranged_value_by_number(path, name, choice-1, min, value['max'], value['step'])
+                                                                            response = module.set_ranged_value_by_number(path, name, choice-1, min, value['max'], value['step'])
 
                                                                             if response == 200:
                                                                                 print('\nValue is set\n')
@@ -340,10 +339,10 @@ def edit(path_to_dot_setting):
                                                                         if value['min'] == max == value['step'] == '':
                                                                             print('\nCannot have min, max and step empty\n')
 
-                                                                        elif moudle.setting_renage_value_exists(path, name, value['min'], max, value['step']):
+                                                                        elif module.setting_renage_value_exists(path, name, value['min'], max, value['step']):
                                                                                 print('\nThis range is already added!\n')
                                                                         else:
-                                                                            response = moudle.set_ranged_value_by_number(path, name, choice-1, value['min'], max, value['step'])
+                                                                            response = module.set_ranged_value_by_number(path, name, choice-1, value['min'], max, value['step'])
 
                                                                             if response == 200:
                                                                                 print('\nValue is set\n')
@@ -365,10 +364,10 @@ def edit(path_to_dot_setting):
                                                                         if value['min'] == value['max'] == step == '':
                                                                             print('\nCannot have min, max and step empty\n')
 
-                                                                        elif moudle.setting_renage_value_exists(path, name, value['min'], value['max'], step):
+                                                                        elif module.setting_renage_value_exists(path, name, value['min'], value['max'], step):
                                                                                 print('\nThis range is already added!\n')
                                                                         else:
-                                                                            response = moudle.set_ranged_value_by_number(path, name, choice-1, value['min'], value['max'], step)
+                                                                            response = module.set_ranged_value_by_number(path, name, choice-1, value['min'], value['max'], step)
 
                                                                             if response == 200:
                                                                                 print('\nValue is set\n')
@@ -389,10 +388,10 @@ def edit(path_to_dot_setting):
                                                                     print("\nError: Value includes new line\n")
                                                                 elif name == '':
                                                                     break
-                                                                elif moudle.setting_simple_value_exists(path, name, value):
+                                                                elif module.setting_simple_value_exists(path, name, value):
                                                                     print('\nThis value already exists!\n')
                                                                 else:
-                                                                    response = moudle.set_simple_value_by_number(path, name, choice-1, value)
+                                                                    response = module.set_simple_value_by_number(path, name, choice-1, value)
 
                                                                     if response == 200:
                                                                         print('\nName has changed\n')
@@ -408,7 +407,7 @@ def edit(path_to_dot_setting):
 
                                 elif choice == '3':
 
-                                    number_of_values = len(moudle.get_setting_values(path, name))
+                                    number_of_values = len(module.get_setting_values(path, name))
 
                                     if number_of_values == 0:
                                         print('\nSetting has no values\n')
@@ -421,7 +420,7 @@ def edit(path_to_dot_setting):
                                             if choice < 1 or choice > number_of_values:
                                                 print('\nNumber is not in range\n')
                                             else:
-                                                moudle.remove_value_by_number(path, name, choice-1)
+                                                module.remove_value_by_number(path, name, choice-1)
                                                 print('\nValue removed successfully\n')
 
                                         else:
@@ -449,7 +448,7 @@ def edit(path_to_dot_setting):
                     print("\nError: Name includes new line\n")
                 elif name == '':
                     break
-                elif moudle.setting_exists_in_file(path, name):
+                elif module.setting_exists_in_file(path, name):
                     print('\nThis setting name already exists!\n')
                 else:
                     while True:
@@ -458,7 +457,7 @@ def edit(path_to_dot_setting):
                         if '\n' in comment:
                             print("\nError: Comment includes new line\n")
                         else:
-                            response = moudle.add_setting_to_file(path, name, comment)
+                            response = module.add_setting_to_file(path, name, comment)
 
                             if response == '200':
                                 print('\nSetting created successfully\n')
@@ -477,10 +476,10 @@ def edit(path_to_dot_setting):
                     print("\nError: Name includes new line\n")
                 elif name == '':
                     break
-                elif not moudle.setting_exists_in_file(path, name):
+                elif not module.setting_exists_in_file(path, name):
                     print('\nSetting with this name does not exist!\n')
                 else:
-                    response = moudle.remove_setting_from_file(path, name)
+                    response = module.remove_setting_from_file(path, name)
 
                     if respose == 200:
                         print('\nSetting removed successfully\n')
@@ -490,13 +489,13 @@ def edit(path_to_dot_setting):
                     break
 
         elif choice == '4':
-            print('\nThis file contains these settings: ' + str(moudle.get_setting_names_in_file(path)))
+            print('\nThis file contains these settings: ' + str(module.get_setting_names_in_file(path)))
 
         elif choice == '5':
             description = get_multiline_input('\nEnter any description you may have for this file')
 
             if description != '':
-                        moudle.set_file_description(path, description)
+                module.set_file_description(path, description)
             
             print('\nDescription changed successfully\n')
 
@@ -524,7 +523,7 @@ def get_multiline_input(prompt):
 def show_setting_values(path_to_dot_setting, setting_name):
     print('\nCurrent values are: ', end ="" )
     i = 1
-    for value in moudle.get_setting_values(path_to_dot_setting, setting_name):
+    for value in module.get_setting_values(path_to_dot_setting, setting_name):
         print(str(i) + '.' + value, end =", " )
         i += 1
 
