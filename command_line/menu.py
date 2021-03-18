@@ -73,6 +73,8 @@ def edit(path_to_dot_setting):
 
                 if ':' in name:
                     print("\nName must not contain ':'\n")
+                elif name[0] == '#':
+                    print("\nName cannot start with '#'\n")
                 elif '\n' in name:
                     print("\nError: Name includes new line\n")
                 elif name == '':
@@ -94,6 +96,8 @@ def edit(path_to_dot_setting):
 
                                 if ':' in new_name:
                                     print("\nName must not contain ':'\n")
+                                elif name[0] == '#':
+                                    print("\nName cannot start with '#'\n")
                                 elif '\n' in new_name:
                                     print("\nError: Name includes new line\n")
                                 elif new_name == '':
@@ -444,6 +448,8 @@ def edit(path_to_dot_setting):
 
                 if ':' in name:
                     print("\nName must not contain ':'\n")
+                elif name[0] == '#':
+                    print("\nName cannot start with '#'\n")
                 elif '\n' in name:
                     print("\nError: Name includes new line\n")
                 elif name == '':
@@ -472,6 +478,8 @@ def edit(path_to_dot_setting):
 
                 if ':' in name:
                     print("\nName must not contain ':'\n")
+                elif name[0] == '#':
+                    print("\nName cannot start with '#'\n")
                 elif '\n' in name:
                     print("\nError: Name includes new line\n")
                 elif name == '':

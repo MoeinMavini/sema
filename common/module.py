@@ -93,7 +93,7 @@ def setting_exists_in_file(path_of_dot_setting, name):
     return False
 
 def get_setting_names_in_file(path_of_dot_setting):
-    
+    """Return a list of settings in the specified file"""
     name_list = []
 
     if os.path.isfile(path_of_dot_setting):
@@ -317,6 +317,36 @@ def set_default(path_to_dot_setting, setting_name, default_value):
         return 200
 
 
+def set_setting_value(path_to_dot_setting, setting_name, value):
+    """Returns 200: Successful,
+       701: Setting name was not found in .setting"""
+
+    file_r = open(path_to_dot_setting, 'r')
+    file_temp = open(path_to_dot_setting + '.temp', 'w')
+
+    success = False
+
+    for line in file_r.readlines():
+        if line[0] == ' ' or line[0] == '\n':
+            pass
+        elif setting_name.upper().strip() == line[:line.find(':')].upper().strip() and line[0] != '#':
+            success = True
+            file_temp.write(line[:line.find(':')] + ':' + value.strip() + '\n')
+        else:
+            file_temp.write(line)
+
+    file_r.close()
+    file_temp.close()
+
+    os.remove(path_to_dot_setting)
+    os.rename(path_to_dot_setting + '.temp', path_to_dot_setting)
+
+    if success:
+        return 200
+    else:
+        return 701
+
+
 def set_setting_comment(path_to_dot_setting, setting_name, comment):
     """Returns 200: Successful,
        201: Setting name was not found in .setting.xml file, file could be corrupted"""
@@ -370,6 +400,27 @@ def set_setting_comment(path_to_dot_setting, setting_name, comment):
         return 200
 
 
+def get_setting_comment(path_to_dot_setting, setting_name):
+
+    if os.path.isfile(path_to_dot_setting + '.xml'):
+
+        parser = ET.XMLParser(remove_blank_text=True)
+
+        tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+        root = tree.getroot()
+    
+        element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+
+        if element == None:
+            return None
+        else:
+            return element.text
+
+    else:
+        return None
+
+
 def set_file_description(path_to_dot_setting, description):
 
     description_list = description.split('\n')
@@ -415,6 +466,26 @@ def set_file_description(path_to_dot_setting, description):
     tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
 
     return 200
+
+
+def get_file_description(path_to_dot_setting):
+
+    if os.path.isfile(path_to_dot_setting + '.xml'):
+        parser = ET.XMLParser(remove_blank_text=True)
+
+        tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+        root = tree.getroot()
+
+        element = root.find("Description")
+
+        if element == None:
+            return None
+    
+        else:
+            return element.text
+    else:
+        return None
 
 
 def get_file_description_lines_num(path_to_dot_setting):
