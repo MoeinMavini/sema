@@ -73,12 +73,12 @@ def edit(path_to_dot_setting):
 
                 if ':' in name:
                     print("\nName must not contain ':'\n")
+                elif name == '':
+                    break
                 elif name[0] == '#':
                     print("\nName cannot start with '#'\n")
                 elif '\n' in name:
                     print("\nError: Name includes new line\n")
-                elif name == '':
-                    break
                 elif not module.setting_exists_in_file(path, name):
                     print('\nSetting not found!\n')
                 else:
@@ -175,10 +175,10 @@ def edit(path_to_dot_setting):
 
                                                 if ':' in value:
                                                     print("\nValue must not contain ':'\n")
-                                                elif '\n' in value:
-                                                    print("\nError: Value includes new line\n")
                                                 elif name == '':
                                                     break
+                                                elif '\n' in value:
+                                                    print("\nError: Value includes new line\n")
                                                 elif module.setting_simple_value_exists(path, name, value):
                                                     print('\nThis value already exists!\n')
                                                 else:
@@ -388,10 +388,10 @@ def edit(path_to_dot_setting):
 
                                                                 if ':' in value:
                                                                     print("\nValue must not contain ':'\n")
-                                                                elif '\n' in value:
-                                                                    print("\nError: Value includes new line\n")
                                                                 elif name == '':
                                                                     break
+                                                                elif '\n' in value:
+                                                                    print("\nError: Value includes new line\n")
                                                                 elif module.setting_simple_value_exists(path, name, value):
                                                                     print('\nThis value already exists!\n')
                                                                 else:
@@ -448,12 +448,12 @@ def edit(path_to_dot_setting):
 
                 if ':' in name:
                     print("\nName must not contain ':'\n")
+                elif name == '':
+                    break
                 elif name[0] == '#':
                     print("\nName cannot start with '#'\n")
                 elif '\n' in name:
                     print("\nError: Name includes new line\n")
-                elif name == '':
-                    break
                 elif module.setting_exists_in_file(path, name):
                     print('\nThis setting name already exists!\n')
                 else:
@@ -478,12 +478,12 @@ def edit(path_to_dot_setting):
 
                 if ':' in name:
                     print("\nName must not contain ':'\n")
+                elif name == '':
+                    break
                 elif name[0] == '#':
                     print("\nName cannot start with '#'\n")
                 elif '\n' in name:
                     print("\nError: Name includes new line\n")
-                elif name == '':
-                    break
                 elif not module.setting_exists_in_file(path, name):
                     print('\nSetting with this name does not exist!\n')
                 else:

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='ASCII'?>
+<root>
+  <Description>Setting to create a rectangle with strings</Description>
+  <setting name="char" default="*">Character that is used for the shape</setting>
+  <setting name="lenght" default="12"><range min="3" max="50" step="1"/></setting>
+  <setting name="width" default="6"><range min="1" max="30" step="1"/></setting>
+</root>

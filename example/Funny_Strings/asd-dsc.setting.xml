@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='ASCII'?>
+<root>
+  <Description>This setting is for the characteristics of 
+assending or descending shape.</Description>
+  <setting name="assending" default="True">Is the shape assending or dessending<value name="true">Assending</value><value name="false">Descending</value></setting>
+  <setting name="char" default="*">Character that is used for the shape</setting>
+  <setting name="lenght" default="9">Lenght of the biggest line<range min="3" max="50" step="1"/></setting>
+  <setting name="position" default="Middle">Position that shape forms based on<value name="rtl">Right to left</value><value name="middle"/><value name="ltr">Left to right</value></setting>
+</root>
