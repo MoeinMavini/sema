@@ -99,7 +99,7 @@ else:
                                     if comment == None:
                                         comment = ''
 
-                                    print(str(i) + '. ' + value + ': ' + comment, end =", " )
+                                    print(str(i) + '.' + value + ': ' + comment, end =", " )
                                     i += 1
 
                                 print(str(i) + '.Manual value')
@@ -149,34 +149,27 @@ else:
                                                         break
 
                                                     try:
-                                                        number = float(number)
+                                                        float(number)
                                                     except:
                                                         print('\n' + number + ' is not a number!\n')
                                                         continue
 
-                                                    diff_from_step = module.diff_to_step(value['min'], value['max'], value['step'], number)
+                                                    diff_from_step = module.diff_to_step(float(value['min']), float(value['max']), float(value['step']), number)
 
-                                                    if value['max'] != None and value['max'] != '':
-                                                        if number > float(value['max']):
-                                                            print('\nNumber is bigger than max\n')
-                                                            continue
-                                                    if value['min'] != None and value['min'] != '':
-                                                        if number < float(value['min']):
-                                                            print(number, float(value['min']))
-                                                            print('\nNumber is less than min\n')
-                                                            continue
-                                                    if value['step'] != None and value['step'] != '':
-                                                        if diff_from_step != 0:
-                                                            print('\nNumber fails the step constraint by ' + str(diff_from_step) + '\n')
-                                                            continue
-                                                    
-                                                    response = module.set_setting_value(path, setting_name, number)
+                                                    if value['max'] != None and number > float(value['max']):
+                                                        print('\nNumber is bigger than max')
+                                                    elif value['min'] != None and number < float(value['min']):
+                                                        print('\nNumber is less than min')
+                                                    elif value['step'] != None and diff_from_step != 0:
+                                                        print('\nNumber fails the step constraint by ' + str(diff_from_step))
+                                                    else:
+                                                        response = module.set_setting_value(path, setting_name, number)
 
-                                                    if response == 200:
-                                                        print('\nNumber set successfully.\n')
-                                                    elif response == 701:
-                                                        print('\n701 Error\n')
-                                                    break
+                                                        if response == 200:
+                                                            print('\nNumber set successfully.\n')
+                                                        elif response == 701:
+                                                            print('\n701 Error\n')
+                                                        break
                                                               
                                             elif 'name' in value:
                                                 response = module.set_setting_value(path, setting_name, value['name'])

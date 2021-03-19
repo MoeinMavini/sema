@@ -73,12 +73,14 @@ def edit(path_to_dot_setting):
 
                 if ':' in name:
                     print("\nName must not contain ':'\n")
+                elif ',' in name:
+                    print("\nName must not contain ','\n")
+                elif name == '':
+                    break
                 elif name[0] == '#':
                     print("\nName cannot start with '#'\n")
                 elif '\n' in name:
                     print("\nError: Name includes new line\n")
-                elif name == '':
-                    break
                 elif not module.setting_exists_in_file(path, name):
                     print('\nSetting not found!\n')
                 else:
@@ -96,6 +98,8 @@ def edit(path_to_dot_setting):
 
                                 if ':' in new_name:
                                     print("\nName must not contain ':'\n")
+                                elif ',' in new_name:
+                                    print("\nName must not contain ','\n")
                                 elif name[0] == '#':
                                     print("\nName cannot start with '#'\n")
                                 elif '\n' in new_name:
@@ -119,6 +123,8 @@ def edit(path_to_dot_setting):
 
                                 if ':' in value:
                                     print("\nValue must not contain ':'\n")
+                                elif ',' in value:
+                                    print("\nValue must not contain ','\n")
                                 elif '\n' in value:
                                     print("\nError: Value includes new line\n")
                                 elif value == '':
@@ -175,10 +181,12 @@ def edit(path_to_dot_setting):
 
                                                 if ':' in value:
                                                     print("\nValue must not contain ':'\n")
-                                                elif '\n' in value:
-                                                    print("\nError: Value includes new line\n")
+                                                elif ',' in value:
+                                                    print("\nValue must not contain ','\n")
                                                 elif name == '':
                                                     break
+                                                elif '\n' in value:
+                                                    print("\nError: Value includes new line\n")
                                                 elif module.setting_simple_value_exists(path, name, value):
                                                     print('\nThis value already exists!\n')
                                                 else:
@@ -294,9 +302,9 @@ def edit(path_to_dot_setting):
                                                                 break
 
                                                     elif action == '2':
-                                                        value = module.get_value_by_number(path, name, choice-1)
+                                                        value = module.get_possible_value_by_number(path, name, choice-1)
                                                         
-                                                        if 'min' in value:
+                                                        if 'min' in value:#Check if value is ranged
                                                             while True:
                                                                 action = input("\nEnter '1' to set min\nEnter '2' to set max\nEnter '3' to set step\n"
                                                                 "Enter 0 to get back\n\n->").strip()
@@ -321,7 +329,7 @@ def edit(path_to_dot_setting):
                                                                         elif module.setting_renage_value_exists(path, name, min, value['max'], value['step']):
                                                                                 print('\nThis range is already added!\n')
                                                                         else:
-                                                                            response = module.set_ranged_value_by_number(path, name, choice-1, min, value['max'], value['step'])
+                                                                            response = module.set_ranged_possible_value_by_number(path, name, choice-1, min, value['max'], value['step'])
 
                                                                             if response == 200:
                                                                                 print('\nValue is set\n')
@@ -346,7 +354,7 @@ def edit(path_to_dot_setting):
                                                                         elif module.setting_renage_value_exists(path, name, value['min'], max, value['step']):
                                                                                 print('\nThis range is already added!\n')
                                                                         else:
-                                                                            response = module.set_ranged_value_by_number(path, name, choice-1, value['min'], max, value['step'])
+                                                                            response = module.set_ranged_possible_value_by_number(path, name, choice-1, value['min'], max, value['step'])
 
                                                                             if response == 200:
                                                                                 print('\nValue is set\n')
@@ -371,7 +379,7 @@ def edit(path_to_dot_setting):
                                                                         elif module.setting_renage_value_exists(path, name, value['min'], value['max'], step):
                                                                                 print('\nThis range is already added!\n')
                                                                         else:
-                                                                            response = module.set_ranged_value_by_number(path, name, choice-1, value['min'], value['max'], step)
+                                                                            response = module.set_ranged_possible_value_by_number(path, name, choice-1, value['min'], value['max'], step)
 
                                                                             if response == 200:
                                                                                 print('\nValue is set\n')
@@ -388,14 +396,16 @@ def edit(path_to_dot_setting):
 
                                                                 if ':' in value:
                                                                     print("\nValue must not contain ':'\n")
-                                                                elif '\n' in value:
-                                                                    print("\nError: Value includes new line\n")
+                                                                elif ',' in value:
+                                                                    print("\nValue must not contain ','\n")
                                                                 elif name == '':
                                                                     break
+                                                                elif '\n' in value:
+                                                                    print("\nError: Value includes new line\n")
                                                                 elif module.setting_simple_value_exists(path, name, value):
                                                                     print('\nThis value already exists!\n')
                                                                 else:
-                                                                    response = module.set_simple_value_by_number(path, name, choice-1, value)
+                                                                    response = module.set_simple_possible_value_by_number(path, name, choice-1, value)
 
                                                                     if response == 200:
                                                                         print('\nName has changed\n')
@@ -424,7 +434,7 @@ def edit(path_to_dot_setting):
                                             if choice < 1 or choice > number_of_values:
                                                 print('\nNumber is not in range\n')
                                             else:
-                                                module.remove_value_by_number(path, name, choice-1)
+                                                module.remove_possible_value_by_number(path, name, choice-1)
                                                 print('\nValue removed successfully\n')
 
                                         else:
@@ -448,12 +458,14 @@ def edit(path_to_dot_setting):
 
                 if ':' in name:
                     print("\nName must not contain ':'\n")
+                elif ',' in name:
+                    print("\nName must not contain ','\n")
+                elif name == '':
+                    break
                 elif name[0] == '#':
                     print("\nName cannot start with '#'\n")
                 elif '\n' in name:
                     print("\nError: Name includes new line\n")
-                elif name == '':
-                    break
                 elif module.setting_exists_in_file(path, name):
                     print('\nThis setting name already exists!\n')
                 else:
@@ -478,12 +490,14 @@ def edit(path_to_dot_setting):
 
                 if ':' in name:
                     print("\nName must not contain ':'\n")
+                elif ',' in name:
+                    print("\nName must not contain ','\n")
+                elif name == '':
+                    break
                 elif name[0] == '#':
                     print("\nName cannot start with '#'\n")
                 elif '\n' in name:
                     print("\nError: Name includes new line\n")
-                elif name == '':
-                    break
                 elif not module.setting_exists_in_file(path, name):
                     print('\nSetting with this name does not exist!\n')
                 else:

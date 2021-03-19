@@ -101,7 +101,7 @@ def get_setting_names_in_file(path_of_dot_setting):
 
         for line in file.readlines():
             if line[0] != '#' and line[0] != ' ' and line[0] != '\n':
-                name_list.append(line.split(':')[0])
+                name_list.append(line.split(':', 1)[0])
 
         file.close()
 
@@ -262,7 +262,7 @@ def set_default(path_to_dot_setting, setting_name, default_value):
         if line[0] == ' ' or line[0] == '\n':
             pass
         elif setting_name.upper().strip() == line[:line.find(':')].upper().strip() and line[0] != '#':
-            if line.split(':')[1].strip() == '':
+            if line.split(':', 1)[1].strip() == '':
                 file_temp.write(line[:line.find(':')] + ':' + default_value + '\n')
             else:
                 file_temp.write(line)
@@ -320,6 +320,8 @@ def set_default(path_to_dot_setting, setting_name, default_value):
 def set_setting_value(path_to_dot_setting, setting_name, value):
     """Returns 200: Successful,
        701: Setting name was not found in .setting"""
+
+    value = str(value).strip() #Input could be str or int so let's cover both
 
     file_r = open(path_to_dot_setting, 'r')
     file_temp = open(path_to_dot_setting + '.temp', 'w')
@@ -669,7 +671,7 @@ def get_setting_values(path_to_dot_setting, setting_name):
     return value_list
 
 
-def remove_value_by_number(path_to_dot_setting, setting_name, number_from_zero):
+def remove_possible_value_by_number(path_to_dot_setting, setting_name, number_from_zero):
     """Removes a value from a setting by it's position in .xml file
        Return: 200 on success
                700 on setting not found
@@ -701,9 +703,9 @@ def remove_value_by_number(path_to_dot_setting, setting_name, number_from_zero):
         return 701
 
 
-def get_value_by_number(path_to_dot_setting, setting_name, number_from_zero):
+def get_possible_value_by_number(path_to_dot_setting, setting_name, number_from_zero):
     """Returns a value from setting by it's position in .xml file
-       If value is simple returns {'value':value, 'comment':comment}
+       If value is simple returns {'name':value, 'comment':comment}
        If value is range returns {'min':value, 'max':value, 'step':value,'comment':comment}
        700 on setting not found
        701 number don't exist"""
@@ -766,7 +768,7 @@ def set_value_comment_by_number(path_to_dot_setting, setting_name, number_from_z
         return 701
 
 
-def set_simple_value_by_number(path_to_dot_setting, setting_name, number_from_zero, new_name):
+def set_simple_possible_value_by_number(path_to_dot_setting, setting_name, number_from_zero, new_name):
     """Sets name for a simple value in setting by it's position in .xml file
        Return: 200 on success
                700 on setting not found
@@ -798,7 +800,7 @@ def set_simple_value_by_number(path_to_dot_setting, setting_name, number_from_ze
         return 701
 
 
-def set_ranged_value_by_number(path_to_dot_setting, setting_name, number_from_zero, min, max, step):
+def set_ranged_possible_value_by_number(path_to_dot_setting, setting_name, number_from_zero, min, max, step):
     """Sets values for a ranged value in setting by it's position in .xml file
        Return: 200 on success
                700 on setting not found
@@ -823,7 +825,7 @@ def set_ranged_value_by_number(path_to_dot_setting, setting_name, number_from_ze
     if number_from_zero < 0:
         return 701
 
-    if len(element.getchildren()) >= number_from_zero+1:
+    if len(element.getchildren()) >= number_from_zero + 1:
         
         range_element = element.getchildren()[number_from_zero]
        
@@ -837,4 +839,44 @@ def set_ranged_value_by_number(path_to_dot_setting, setting_name, number_from_ze
         
     else:
         return 701
+
+
+def diff_to_step(min, max, step, value):
+    """Returns '0' if value is in step or how much value should change to reach step"""
+
+    round_by = len(str(step).split('.')[1])#round the value to avoid many decimal ponit 1 stuff in result
+
+    if ( min == max and (min != None or min == '') ) or step == None or step == '' or min == value:
+        return 0
+
+    if min == None or min == '':
+        min = 0
+    
+    try:
+        min = float(min)
+        step = float(step)
+        value = float(value)
+    except:
+        pass
+
+    if min < value:
+        while min < value:
+            value = round(value - step, round_by)
+
+            if min == value:
+                return 0
+                break
+
+        return round((value + step) - min, round_by)
+        
+
+    elif min > value:
+        while value < min:
+            value = round(value + step, round_by)
+
+            if min == value:
+                return 0
+                break
+
+        return round(min - (value - step), round_by)
 
