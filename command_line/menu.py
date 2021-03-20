@@ -2,7 +2,7 @@ from common import module
 
 def start():
 
-    print('\nWelcome to sema setting maker\n')
+    print('\nWelcome to sema setting maker. This is the developer tool to make settings and edit created settings.\n')
 
     while True:
         choice = input("Enter '1' to edit a setting file\nEnter '2' to create a new setting file\n"
