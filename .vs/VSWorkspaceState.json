@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\example\\Funny_Strings",
+    "\\sema"
   ],
-  "SelectedNode": "\\README.md",
+  "SelectedNode": "\\sema\\extract.py",
   "PreviewInSolutionExplorer": false
 }

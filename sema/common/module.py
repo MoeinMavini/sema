@@ -844,7 +844,7 @@ def set_ranged_possible_value_by_number(path_to_dot_setting, setting_name, numbe
 def diff_to_step(min, max, step, value):
     """Returns '0' if value is in step or how much value should change to reach step"""
 
-    round_by = len(str(step).split('.')[1])#round the value to avoid many decimal ponit 1 stuff in result
+    round_by = len(str(value).split('.')[1])#round the value to avoid many decimal ponit 1 stuff in result
 
     if ( min == max and (min != None or min == '') ) or step == None or step == '' or min == value:
         return 0

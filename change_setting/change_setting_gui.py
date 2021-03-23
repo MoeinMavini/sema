@@ -1,4 +1,4 @@
-from common import module
+from sema.common import module
 import os
 
 #If sema_files file is available in this directory, files written in there will be used.

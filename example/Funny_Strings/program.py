@@ -1,5 +1,5 @@
 #This is not a useful program but it shows the use of settings
-import sema
+from sema import extract
 
 char1 = char2 = '*'
 is_ascending = 'true'
@@ -8,43 +8,43 @@ asd_dsc_position = 'rtl'
 rectangle_lenght = 15
 rectangle_width = 8
 
-temp = sema.get_value('asd-dsc.setting', 'Char')
+temp = extract.get_value('asd-dsc.setting', 'Char')
 if 'Value' in temp:#It has value
     char1 = temp['Value']
 else:
     print('char1: ' + temp['message'])#Prints the error
 
-temp = sema.get_value('rectangle.setting', 'Char')
+temp = extract.get_value('rectangle.setting', 'Char')
 if 'Value' in temp:
     char2 = temp['Value']
 else:
     print('char2: ' + temp['message'])
 
-temp = sema.get_value('asd-dsc.setting', 'ascending')
+temp = extract.get_value('asd-dsc.setting', 'ascending')
 if 'Value' in temp:
     is_ascending = temp['Value']
 else:
     print('is_ascending: ' + temp['message'])
 
-temp = sema.get_value('asd-dsc.setting', 'lenght')
+temp = extract.get_value('asd-dsc.setting', 'lenght')
 if 'Value' in temp:
     asd_dsc_lenght = temp['Value']
 else:
     print('asd_dsc_lenght: ' + temp['message'])
 
-temp = sema.get_value('asd-dsc.setting', 'position')
+temp = extract.get_value('asd-dsc.setting', 'position')
 if 'Value' in temp:
     asd_dsc_position = temp['Value']
 else:
     print('asd_dsc_position: ' + temp['message'])
 
-temp = sema.get_value('rectangle.setting', 'lenght')
+temp = extract.get_value('rectangle.setting', 'lenght')
 if 'Value' in temp:
     rectangle_lenght = temp['Value']
 else:
     print('rectangle_lenght: ' + temp['message'])
 
-temp = sema.get_value('rectangle.setting', 'width')
+temp = extract.get_value('rectangle.setting', 'width')
 if 'Value' in temp:
     rectangle_width = temp['Value']
 else:

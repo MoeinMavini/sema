@@ -1,4 +1,4 @@
-from common import module
+from sema.common import module
 
 def start():
 

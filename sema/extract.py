@@ -1,6 +1,6 @@
 """This library is used to extract data from a setting maker file in code
 For now it has only one function: get_value to get value of a setting"""
-from common import module
+from sema.common import module
 
 def get_value(file_name, setting_name):
     """This function is used to get the value of a setting in the specified file

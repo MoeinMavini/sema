@@ -8,6 +8,6 @@ ascending:false
 #Character that is used for the shape
 Char:*
 #Lenght of the biggest line
-Lenght:9
+Lenght:6.0
 #Position that shape forms based on
 Position:middle
