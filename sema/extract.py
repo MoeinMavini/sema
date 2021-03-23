@@ -1,6 +1,6 @@
 """This library is used to extract data from a setting maker file in code
 For now it has only one function: get_value to get value of a setting"""
-from common import module
+from sema.common import check
 
 def get_value(file_name, setting_name):
     """This function is used to get the value of a setting in the specified file
@@ -11,7 +11,7 @@ def get_value(file_name, setting_name):
         {'Error':701, 'message':message} == Setting name not found
         {'Value':value} == Seconed part is the setting value"""
 
-    verfy_result = module.verfy_file(file_name, False)
+    verfy_result = check.file_exists(file_name, False)
 
     if verfy_result == 701:
         return {'Error':700, 'message': 'File ' + file_name + ' is not valid'}

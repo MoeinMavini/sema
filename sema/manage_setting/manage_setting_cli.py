@@ -1,4 +1,5 @@
-from common import module
+from sema.common import check, get, cli
+from sema.manage_setting import common
 
 def start():
 
@@ -15,29 +16,29 @@ def start():
             path = input('Enter the name of setting file you want to edit (can include path): ').strip()
 
             if path != '':
-                verfy_result = module.verfy_file(path)
+                result = check.file_exists(path)
 
-                if verfy_result == 700:
+                if result == 700:
                     print('\nChosen file is not a setting maker file\nFile must have .setting extension with a .setting.xml file in the same directory\n')
-                elif verfy_result == 701:
+                elif result == 701:
                     print('\n.setting file missing! Both .setting and .setting.xml are required\n')
-                elif verfy_result == 702:
+                elif result == 702:
                     print('\n.setting.xml file missing! Both .setting and .setting.xml are required\n')
                 else:
-                    edit(verfy_result)
+                    edit(result)
 
         elif choice == '2':
             path = input('Enter the file name (can include path): ').strip()
 
             if path != '':
-                response = module.create_setting_file(path)
+                response = common.create_setting_file(path)
 
                 if response == 200:
 
-                    description = get_multiline_input('\nEnter any description you may have for this file')
+                    description = cli.get_multiline_input('\nEnter any description you may have for this file')
 
                     if description != '':
-                        module.set_file_description(path + '.setting', description)
+                        common.set_file_description(path + '.setting', description)
 
                     print('\nSetting file created successfully')
 
@@ -57,7 +58,7 @@ def start():
 def edit(path_to_dot_setting):
     path = path_to_dot_setting
 
-    print('\nThis file contains these settings: ' + str(module.get_setting_names_in_file(path)))
+    print('\nThis file contains these settings: ' + str(get.setting_names_in_file(path)))
 
     while True:
         choice = input("\nEnter '1' to edit a setting\nEnter '2' to add a new setting\n"
@@ -71,17 +72,21 @@ def edit(path_to_dot_setting):
             while True:
                 name = input('Enter the setting name: ').strip()
 
-                if ':' in name:
+                name_check = check.setting_name(name)
+
+                if name_check == 701:
                     print("\nName must not contain ':'\n")
-                elif ',' in name:
+                elif name_check == 702:
                     print("\nName must not contain ','\n")
-                elif name == '':
+                elif name_check == 700:
                     break
-                elif name[0] == '#':
+                elif name_check == 703:
                     print("\nName cannot start with '#'\n")
-                elif '\n' in name:
+                elif name_check == 704:
                     print("\nError: Name includes new line\n")
-                elif not module.setting_exists_in_file(path, name):
+                elif name_check != 200:
+                    print("\nUnspecified Error\n")
+                elif not check.setting_exists_in_file(path, name):
                     print('\nSetting not found!\n')
                 else:
                     while True:
@@ -96,20 +101,24 @@ def edit(path_to_dot_setting):
                             while True:
                                 new_name = input('Enter new setting name: ').strip()
 
-                                if ':' in new_name:
+                                name_check = check.setting_name(new_name)
+
+                                if name_check == 701:
                                     print("\nName must not contain ':'\n")
-                                elif ',' in new_name:
+                                elif name_check == 702:
                                     print("\nName must not contain ','\n")
-                                elif name[0] == '#':
+                                elif name_check == 703:
                                     print("\nName cannot start with '#'\n")
-                                elif '\n' in new_name:
+                                elif name_check == 704:
                                     print("\nError: Name includes new line\n")
-                                elif new_name == '':
+                                elif name_check == 700:
                                     break
-                                elif module.setting_exists_in_file(path, new_name):
+                                elif name_check != 200:
+                                    print("\nUnspecified Error\n")
+                                elif check.setting_exists_in_file(path, new_name):
                                     print('\nThis setting name already exists!\n')
                                 else:
-                                    response = module.change_setting_name(path, name, new_name)
+                                    response = common.change_setting_name(path, name, new_name)
 
                                     if response == 200:
                                         print('\nName changed successfully.\n')
@@ -121,16 +130,18 @@ def edit(path_to_dot_setting):
                             while True:
                                 value = input('Enter default value: ').strip()
 
-                                if ':' in value:
-                                    print("\nValue must not contain ':'\n")
-                                elif ',' in value:
+                                check_value = check.general_value(value)
+
+                                if check_value == 700:
                                     print("\nValue must not contain ','\n")
-                                elif '\n' in value:
+                                elif check_value == 701:
                                     print("\nError: Value includes new line\n")
+                                elif check_value != 200:
+                                    print("\nUnspecified Error\n")
                                 elif value == '':
                                     break
                                 else:
-                                    response = module.set_default(path, name, value)
+                                    response = common.set_default(path, name, value)
 
                                     if response == 200:
                                         print('\nDefault value set successfully.\n')
@@ -147,7 +158,7 @@ def edit(path_to_dot_setting):
                                 elif comment == '':
                                     break
                                 else:
-                                    response = module.set_setting_comment(path, name, comment)
+                                    response = common.set_setting_comment(path, name, comment)
 
                                     if response == 200:
                                         print('\nComment set successfully.\n')
@@ -179,15 +190,17 @@ def edit(path_to_dot_setting):
                                             while True:
                                                 value = input('Enter the value: ').strip()
 
-                                                if ':' in value:
-                                                    print("\nValue must not contain ':'\n")
-                                                elif ',' in value:
+                                                check_value = check.general_value(value)
+
+                                                if check_value == 700:
                                                     print("\nValue must not contain ','\n")
-                                                elif name == '':
-                                                    break
-                                                elif '\n' in value:
+                                                elif check_value == 701:
                                                     print("\nError: Value includes new line\n")
-                                                elif module.setting_simple_value_exists(path, name, value):
+                                                elif check_value != 200:
+                                                    print("\nUnspecified Error\n")
+                                                elif value == '':
+                                                    break
+                                                elif check.setting_simple_value_exists(path, name, value):
                                                     print('\nThis value already exists!\n')
                                                 else:
                                                     while True:
@@ -196,7 +209,7 @@ def edit(path_to_dot_setting):
                                                         if '\n' in comment:
                                                             print("\nError: Comment includes new line\n")
                                                         else:
-                                                            response = module.add_simple_value(path, name, value, comment)
+                                                            response = common.add_simple_value(path, name, value, comment)
 
                                                             if response == 200:
                                                                 print('\nValue added successfully\n')
@@ -245,7 +258,7 @@ def edit(path_to_dot_setting):
                                             if min == max == step == '':
                                                 continue
 
-                                            elif module.setting_renage_value_exists(path, name, min, max, step):
+                                            elif check.setting_renage_value_exists(path, name, min, max, step):
                                                     print('\nThis range is already added!\n')
                                             else:
                                                 while True:
@@ -254,7 +267,7 @@ def edit(path_to_dot_setting):
                                                     if '\n' in comment:
                                                         print("\nError: Comment includes new line\n")
                                                     else:
-                                                        response = module.add_range_value(path, name, min, max, step, comment)
+                                                        response = common.add_range_value(path, name, min, max, step, comment)
 
                                                         if response == 200:
                                                             print('\nRange added successfully\n')
@@ -266,7 +279,7 @@ def edit(path_to_dot_setting):
                                             print('\nCommand not found!\n')
 
                                 elif choice == '2':
-                                    number_of_values = len(module.get_setting_values(path, name))
+                                    number_of_values = len(get.setting_values(path, name))
 
                                     if number_of_values == 0:
                                         print('\nSetting has no values\n')
@@ -293,7 +306,7 @@ def edit(path_to_dot_setting):
                                                             if '\n' in comment:
                                                                 print("\nError: Comment includes new line\n")
                                                             else:
-                                                                response = module.set_value_comment_by_number(path, name, choice-1, comment)
+                                                                response = common.set_value_comment_by_number(path, name, choice-1, comment)
 
                                                                 if response == 200:
                                                                     print('\nCommented is set\n')
@@ -302,7 +315,7 @@ def edit(path_to_dot_setting):
                                                                 break
 
                                                     elif action == '2':
-                                                        value = module.get_possible_value_by_number(path, name, choice-1)
+                                                        value = get.possible_value_by_number(path, name, choice-1)
                                                         
                                                         if 'min' in value:#Check if value is ranged
                                                             while True:
@@ -326,10 +339,10 @@ def edit(path_to_dot_setting):
                                                                         if min == value['max'] == value['step'] == '':
                                                                             print('\nCannot have min, max and step empty\n')
 
-                                                                        elif module.setting_renage_value_exists(path, name, min, value['max'], value['step']):
+                                                                        elif check.setting_renage_value_exists(path, name, min, value['max'], value['step']):
                                                                                 print('\nThis range is already added!\n')
                                                                         else:
-                                                                            response = module.set_ranged_possible_value_by_number(path, name, choice-1, min, value['max'], value['step'])
+                                                                            response = common.set_ranged_possible_value_by_number(path, name, choice-1, min, value['max'], value['step'])
 
                                                                             if response == 200:
                                                                                 print('\nValue is set\n')
@@ -351,10 +364,10 @@ def edit(path_to_dot_setting):
                                                                         if value['min'] == max == value['step'] == '':
                                                                             print('\nCannot have min, max and step empty\n')
 
-                                                                        elif module.setting_renage_value_exists(path, name, value['min'], max, value['step']):
+                                                                        elif check.setting_renage_value_exists(path, name, value['min'], max, value['step']):
                                                                                 print('\nThis range is already added!\n')
                                                                         else:
-                                                                            response = module.set_ranged_possible_value_by_number(path, name, choice-1, value['min'], max, value['step'])
+                                                                            response = common.set_ranged_possible_value_by_number(path, name, choice-1, value['min'], max, value['step'])
 
                                                                             if response == 200:
                                                                                 print('\nValue is set\n')
@@ -376,10 +389,10 @@ def edit(path_to_dot_setting):
                                                                         if value['min'] == value['max'] == step == '':
                                                                             print('\nCannot have min, max and step empty\n')
 
-                                                                        elif module.setting_renage_value_exists(path, name, value['min'], value['max'], step):
+                                                                        elif check.setting_renage_value_exists(path, name, value['min'], value['max'], step):
                                                                                 print('\nThis range is already added!\n')
                                                                         else:
-                                                                            response = module.set_ranged_possible_value_by_number(path, name, choice-1, value['min'], value['max'], step)
+                                                                            response = common.set_ranged_possible_value_by_number(path, name, choice-1, value['min'], value['max'], step)
 
                                                                             if response == 200:
                                                                                 print('\nValue is set\n')
@@ -394,18 +407,20 @@ def edit(path_to_dot_setting):
                                                             while True:
                                                                 value = input('Enter the new value: ').strip()
 
-                                                                if ':' in value:
-                                                                    print("\nValue must not contain ':'\n")
-                                                                elif ',' in value:
+                                                                check_value = check.general_value(value)
+
+                                                                if check_value == 700:
                                                                     print("\nValue must not contain ','\n")
-                                                                elif name == '':
-                                                                    break
-                                                                elif '\n' in value:
+                                                                elif check_value == 701:
                                                                     print("\nError: Value includes new line\n")
-                                                                elif module.setting_simple_value_exists(path, name, value):
+                                                                elif check_value != 200:
+                                                                    print("\nUnspecified Error\n")
+                                                                elif value == '':
+                                                                    break
+                                                                elif check.setting_simple_value_exists(path, name, value):
                                                                     print('\nThis value already exists!\n')
                                                                 else:
-                                                                    response = module.set_simple_possible_value_by_number(path, name, choice-1, value)
+                                                                    response = common.set_simple_possible_value_by_number(path, name, choice-1, value)
 
                                                                     if response == 200:
                                                                         print('\nName has changed\n')
@@ -421,7 +436,7 @@ def edit(path_to_dot_setting):
 
                                 elif choice == '3':
 
-                                    number_of_values = len(module.get_setting_values(path, name))
+                                    number_of_values = len(get.setting_values(path, name))
 
                                     if number_of_values == 0:
                                         print('\nSetting has no values\n')
@@ -434,7 +449,7 @@ def edit(path_to_dot_setting):
                                             if choice < 1 or choice > number_of_values:
                                                 print('\nNumber is not in range\n')
                                             else:
-                                                module.remove_possible_value_by_number(path, name, choice-1)
+                                                common.remove_possible_value_by_number(path, name, choice-1)
                                                 print('\nValue removed successfully\n')
 
                                         else:
@@ -445,10 +460,9 @@ def edit(path_to_dot_setting):
 
                                 else:
                                     print('\nCommand not found!\n')
-
                         else:
                                 print('\nCommand not found!\n')
-                                    
+
                     break
 
 
@@ -456,17 +470,21 @@ def edit(path_to_dot_setting):
             while True:
                 name = input('Enter the setting name: ').strip()
 
-                if ':' in name:
+                name_check = check.setting_name(name)
+
+                if name_check == 701:
                     print("\nName must not contain ':'\n")
-                elif ',' in name:
+                elif name_check == 702:
                     print("\nName must not contain ','\n")
-                elif name == '':
+                elif name_check == 700:
                     break
-                elif name[0] == '#':
+                elif name_check == 703:
                     print("\nName cannot start with '#'\n")
-                elif '\n' in name:
+                elif name_check == 704:
                     print("\nError: Name includes new line\n")
-                elif module.setting_exists_in_file(path, name):
+                elif name_check != 200:
+                    print("\nUnspecified Error\n")
+                elif check.setting_exists_in_file(path, name):
                     print('\nThis setting name already exists!\n')
                 else:
                     while True:
@@ -475,9 +493,9 @@ def edit(path_to_dot_setting):
                         if '\n' in comment:
                             print("\nError: Comment includes new line\n")
                         else:
-                            response = module.add_setting_to_file(path, name, comment)
+                            response = common.add_setting_to_file(path, name, comment)
 
-                            if response == '200':
+                            if response == 200:
                                 print('\nSetting created successfully\n')
                             elif response == 201:
                                 print('\nCaution: Definition for setting ' + name + ' already exists in setting.xml file\n')
@@ -488,22 +506,26 @@ def edit(path_to_dot_setting):
             while True:
                 name = input('Enter the setting name: ').strip()
 
-                if ':' in name:
+                name_check = check.setting_name(name)
+
+                if name_check == 701:
                     print("\nName must not contain ':'\n")
-                elif ',' in name:
+                elif name_check == 702:
                     print("\nName must not contain ','\n")
-                elif name == '':
+                elif name_check == 700:
                     break
-                elif name[0] == '#':
+                elif name_check == 703:
                     print("\nName cannot start with '#'\n")
-                elif '\n' in name:
+                elif name_check == 704:
                     print("\nError: Name includes new line\n")
-                elif not module.setting_exists_in_file(path, name):
+                elif name_check != 200:
+                    print("\nUnspecified Error\n")
+                elif not check.setting_exists_in_file(path, name):
                     print('\nSetting with this name does not exist!\n')
                 else:
-                    response = module.remove_setting_from_file(path, name)
+                    response = common.remove_setting_from_file(path, name)
 
-                    if respose == 200:
+                    if response == 200:
                         print('\nSetting removed successfully\n')
                     elif response == 201:
                         print("\nCaution: Setting removed successfully but Setting '" + name + "' didn't exist in setting.xml file.\n"
@@ -511,13 +533,13 @@ def edit(path_to_dot_setting):
                     break
 
         elif choice == '4':
-            print('\nThis file contains these settings: ' + str(module.get_setting_names_in_file(path)))
+            print('\nThis file contains these settings: ' + str(get.setting_names_in_file(path)))
 
         elif choice == '5':
-            description = get_multiline_input('\nEnter any description you may have for this file')
+            description = cli.get_multiline_input('\nEnter any description you may have for this file')
 
             if description != '':
-                module.set_file_description(path, description)
+                common.set_file_description(path, description)
             
             print('\nDescription changed successfully\n')
 
@@ -525,28 +547,16 @@ def edit(path_to_dot_setting):
             print('\nCommand not found!\n')
 
 
-def get_multiline_input(prompt):
-    
-    print(prompt + '\n***To end input, write nothing just press Enter (New line)***\n')
-
-    content = ''
-
-    while True:
-        temp = input(':')
-
-        if temp == '':
-            break
-        else:
-            content += temp + '\n'
-    
-    return content[:-1]
-
-
 def show_setting_values(path_to_dot_setting, setting_name):
     print('\nCurrent values are: ', end ="" )
     i = 1
-    for value in module.get_setting_values(path_to_dot_setting, setting_name):
+    for value in get.setting_values(path_to_dot_setting, setting_name):
         print(str(i) + '.' + value, end =", " )
         i += 1
 
     print('\n')
+
+
+if __name__ == "__main__":
+    start()
+

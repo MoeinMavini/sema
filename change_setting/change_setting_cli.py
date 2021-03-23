@@ -1,4 +1,4 @@
-from common import module
+from sema.common import check, get, set
 import os
 
 #If sema_files file is available in this directory, files written in there will be used.
@@ -49,7 +49,7 @@ else:
             else:
                 path = approved_dot_setting_list[choice-1]
 
-                setting_list = module.get_setting_names_in_file(path)
+                setting_list = get.setting_names_in_file(path)
 
                 if len(setting_list) == 0:
                     print('\nThis file has no setting\n')
@@ -61,13 +61,13 @@ else:
                     has_dot_xml = False
                     print('\nCaution: .setting.xml file missing, no additional data is provided for this setting')
 
-                description = module.get_file_description(path)
+                description = get.file_description(path)
 
                 if description != None:
                     print('\nSetting file description: ' +  description + '\n')
 
                 for i in range(len(setting_list)):
-                    comment = module.get_setting_comment(path, setting_list[i])
+                    comment = get.setting_comment(path, setting_list[i])
 
                     if comment != None:
                         comment = ': ' + comment
@@ -94,17 +94,17 @@ else:
 
                                 print('\nPossible values are: ', end ="" )
                                 i = 1
-                                for value in module.get_setting_values(path, setting_name):
-                                    comment = module.get_possible_value_by_number(path, setting_name, i-1)['comment']
+                                for value in get.setting_values(path, setting_name):
+                                    comment = get.possible_value_by_number(path, setting_name, i-1)['comment']
                                     if comment == None:
                                         comment = ''
 
-                                    print(str(i) + '.' + value + ': ' + comment, end =", " )
+                                    print(str(i) + '. ' + value + ': ' + comment, end =", " )
                                     i += 1
 
                                 print(str(i) + '.Manual value')
 
-                                number_of_values = len(module.get_setting_values(path, setting_name))
+                                number_of_values = len(get.setting_values(path, setting_name))
 
                                 while True:
                                     choice = input('\nEnter the number of value you want to set (1 to ' + str( number_of_values + 1) + ', 0 to get back): ').strip()
@@ -122,16 +122,18 @@ else:
                                             while True:
                                                 value = input('Enter the new value: ').strip()
 
-                                                if ':' in value:
-                                                    print("\nValue must not contain ':'\n")
-                                                elif ',' in value:
+                                                check_value = check.general_value(value)
+
+                                                if check_value == 700:
                                                     print("\nValue must not contain ','\n")
-                                                elif '\n' in value:
+                                                elif check_value == 701:
                                                     print("\nError: Value includes new line\n")
+                                                elif check_value != 200:
+                                                    print("\nUnspecified Error\n")
                                                 elif value == '':
                                                     break
                                                 else:
-                                                    response = module.set_setting_value(path, setting_name, value)
+                                                    response = set.setting_value(path, setting_name, value)
 
                                                     if response == 200:
                                                         print('\nValue set successfully.\n')
@@ -139,7 +141,7 @@ else:
                                                         print('\n701 Error\n')
                                                     break
                                         else:
-                                            value = module.get_possible_value_by_number(path, setting_name, choice-1)
+                                            value = get.possible_value_by_number(path, setting_name, choice-1)
                                                         
                                             if 'min' in value:#Check if value is ranged
                                                 while True:
@@ -149,30 +151,37 @@ else:
                                                         break
 
                                                     try:
-                                                        float(number)
+                                                        number = float(number)
                                                     except:
                                                         print('\n' + number + ' is not a number!\n')
                                                         continue
 
-                                                    diff_from_step = module.diff_to_step(float(value['min']), float(value['max']), float(value['step']), number)
+                                                    diff_from_step = check.diff_to_step(value['min'], value['max'], value['step'], number)
 
-                                                    if value['max'] != None and number > float(value['max']):
-                                                        print('\nNumber is bigger than max')
-                                                    elif value['min'] != None and number < float(value['min']):
-                                                        print('\nNumber is less than min')
-                                                    elif value['step'] != None and diff_from_step != 0:
-                                                        print('\nNumber fails the step constraint by ' + str(diff_from_step))
-                                                    else:
-                                                        response = module.set_setting_value(path, setting_name, number)
+                                                    if value['max'] != None and value['max'] != '':
+                                                        if number > float(value['max']):
+                                                            print('\nNumber is bigger than max\n')
+                                                            continue
+                                                    if value['min'] != None and value['min'] != '':
+                                                        if number < float(value['min']):
+                                                            print(number, float(value['min']))
+                                                            print('\nNumber is less than min\n')
+                                                            continue
+                                                    if value['step'] != None and value['step'] != '':
+                                                        if diff_from_step != 0:
+                                                            print('\nNumber fails the step constraint by ' + str(diff_from_step) + '\n')
+                                                            continue
+                                                    
+                                                    response = set.setting_value(path, setting_name, number)
 
-                                                        if response == 200:
-                                                            print('\nNumber set successfully.\n')
-                                                        elif response == 701:
-                                                            print('\n701 Error\n')
-                                                        break
+                                                    if response == 200:
+                                                        print('\nNumber set successfully.\n')
+                                                    elif response == 701:
+                                                        print('\n701 Error\n')
+                                                    break
                                                               
                                             elif 'name' in value:
-                                                response = module.set_setting_value(path, setting_name, value['name'])
+                                                response = set.setting_value(path, setting_name, value['name'])
 
                                                 if response == 200:
                                                     print('\nValue set successfully.\n')
@@ -184,16 +193,18 @@ else:
                                 while True:
                                     value = input('Enter the new value: ').strip()
 
-                                    if ':' in value:
-                                        print("\nValue must not contain ':'\n")
-                                    elif ',' in value:
+                                    check_value = check.general_value(value)
+
+                                    if check_value == 700:
                                         print("\nValue must not contain ','\n")
-                                    elif '\n' in value:
+                                    elif check_value == 701:
                                         print("\nError: Value includes new line\n")
+                                    elif check_value != 200:
+                                        print("\nUnspecified Error\n")
                                     elif value == '':
                                         break
                                     else:
-                                        response = module.set_setting_value(path, setting_name, value)
+                                        response = set.setting_value(path, setting_name, value)
 
                                         if response == 200:
                                             print('\nValue set successfully.\n')
