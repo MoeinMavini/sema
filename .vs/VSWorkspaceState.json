@@ -1,10 +1,7 @@
 {
   "ExpandedNodes": [
-    "",
-    "\\change_setting",
-    "\\sema",
-    "\\sema\\manage_setting"
+    ""
   ],
-  "SelectedNode": "\\sema\\manage_setting\\manage_setting_cli.py",
+  "SelectedNode": "\\setup.cfg",
   "PreviewInSolutionExplorer": false
 }

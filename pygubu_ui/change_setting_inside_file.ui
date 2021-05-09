@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.1">
+  <object class="ttk.Frame" id="inside_file_frame">
+    <property name="height">500</property>
+    <property name="width">500</property>
+    <layout manager="pack">
+      <property name="propagate">True</property>
+      <property name="side">top</property>
+    </layout>
+    <child>
+      <object class="ttk.Button" id="back_to_main_button">
+        <property name="text" translatable="yes">Back</property>
+        <layout manager="pack">
+          <property name="anchor">w</property>
+          <property name="propagate">True</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Labelframe" id="select_setting_labelframe">
+        <property name="height">200</property>
+        <property name="text" translatable="yes">Select the option you want to change it's value</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="propagate">True</property>
+          <property name="side">bottom</property>
+        </layout>
+        <child>
+          <object class="ttk.Combobox" id="select_setting_combobox">
+            <property name="state">readonly</property>
+            <layout manager="pack">
+              <property name="fill">x</property>
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Button" id="select_setting_button">
+            <property name="text" translatable="yes">Accept</property>
+            <layout manager="pack">
+              <property name="propagate">True</property>
+              <property name="side">bottom</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="file_description_label">
+        <property name="text" translatable="yes">Setting file description: </property>
+        <layout manager="pack">
+          <property name="padx">7</property>
+          <property name="pady">12</property>
+          <property name="propagate">True</property>
+          <property name="side">left</property>
+        </layout>
+      </object>
+    </child>
+  </object>
+</interface>

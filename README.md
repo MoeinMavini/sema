@@ -18,20 +18,14 @@ So basiclly there is much to be done, at this phase i just want people to see th
 love to hear about ideas and know why you like or hate this idea. Feel free to ask or say anything.  
 
 # Installation
+Use `pip install sema` to install `sema` 
+or download sema repository from github and open terminal in root of the project then type `python setup.py build`
+ after that type `python setup.py install`  
 ## For creating and managing settings for developers
-Use `pip install sema` to install `sema` in command line and sema library
-or download the project and open terminal in root of the project and type `python setup.py build` then type 
-`python setup.py install`  
-`sema` and `sema -cli` are available in terminal for creating and managing settings for developers 
-and library is for reading settings in your program.
+`sema` and `sema -cli` are available in terminal for creating and managing settings for developers.
 ## Reading settings in your program
-Use `pip install sema` to install `sema` in command line and sema library
-or download the project and open terminal in root of the project and type `python setup.py build` then type 
-`python setup.py install`  
-`sema` and `sema -cli` are available in terminal for creating and managing settings for developers 
-and library is for reading settings in your program.  
-To extract settings in your program use `from sema import extract`, for now there is only 1 function in library which
-returns the value for given setting name `get_value(file_name, setting_name)`.
+To extract settings in your program use `from sema import extract`, for now there is only 1 function in the library which
+returns the value for given setting name `get_value(file_name, setting_name)`
 ## Altering the settings for users
 Use change_setting_cli.py and change_setting_gui.py files in change_setting folder to alter settings.  
 To give the addresses of .setting file(s) you want this script to be responsible for, there are 2 ways:  

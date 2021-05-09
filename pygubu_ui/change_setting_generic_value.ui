@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.1">
+  <object class="ttk.Frame" id="generic_value_frame">
+    <property name="height">500</property>
+    <property name="width">500</property>
+    <layout manager="pack">
+      <property name="propagate">True</property>
+      <property name="side">top</property>
+    </layout>
+    <child>
+      <object class="ttk.Button" id="back_from_generic_value_button">
+        <property name="text" translatable="yes">Back</property>
+        <layout manager="pack">
+          <property name="anchor">w</property>
+          <property name="propagate">True</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Separator" id="separator1">
+        <property name="orient">horizontal</property>
+        <layout manager="pack">
+          <property name="fill">x</property>
+          <property name="propagate">True</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="generic_value_label">
+        <property name="text" translatable="yes">Enter the new value:</property>
+        <layout manager="pack">
+          <property name="padx">15</property>
+          <property name="pady">8</property>
+          <property name="propagate">True</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Entry" id="generic_value_entery">
+        <layout manager="pack">
+          <property name="propagate">True</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Button" id="generic_value_submit_button">
+        <property name="text" translatable="yes">Submit</property>
+        <layout manager="pack">
+          <property name="pady">7</property>
+          <property name="propagate">True</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+  </object>
+</interface>

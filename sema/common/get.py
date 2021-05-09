@@ -105,7 +105,7 @@ def setting_values(path_to_dot_setting, setting_name):
                
             step = ''
             if e.attrib['step'] != '':
-                step = ' Step: ' + e.attrib['step']
+                step = ' - Step ' + e.attrib['step']
 
             value_list.append(min + ' To ' + max + step)
 

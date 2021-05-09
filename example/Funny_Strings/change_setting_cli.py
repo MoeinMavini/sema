@@ -98,8 +98,10 @@ else:
                                     comment = get.possible_value_by_number(path, setting_name, i-1)['comment']
                                     if comment == None:
                                         comment = ''
+                                    else:
+                                        comment = ': ' + comment
 
-                                    print(str(i) + '. ' + value + ': ' + comment, end =", " )
+                                    print(str(i) + '. ' + value + comment, end =", " )
                                     i += 1
 
                                 print(str(i) + '.Manual value')
@@ -118,7 +120,7 @@ else:
                                     else:
                                         choice = int(choice)
 
-                                        if choice == number_of_values + 1:
+                                        if choice == number_of_values + 1: # Manual Value Chosen
                                             while True:
                                                 value = input('Enter the new value: ').strip()
 
@@ -164,7 +166,6 @@ else:
                                                             continue
                                                     if value['min'] != None and value['min'] != '':
                                                         if number < float(value['min']):
-                                                            print(number, float(value['min']))
                                                             print('\nNumber is less than min\n')
                                                             continue
                                                     if value['step'] != None and value['step'] != '':
