@@ -1,15 +1,15 @@
 """This library is used to extract data from a setting maker file in code
-For now it has only one function: get_value to get value of a setting"""
+For now it has only one function: get_value to get value of an option"""
 from sema.common import check
 
-def get_value(file_name, setting_name):
-    """This function is used to get the value of a setting in the specified file
+def get_value(file_name, option_name):
+    """This function is used to get the value of an option in the specified file
     File name can include path
     
     returns:
         {'Error':700, 'message':message} == .setting file not found! this file holds the values
-        {'Error':701, 'message':message} == Setting name not found
-        {'Value':value} == Seconed part is the setting value"""
+        {'Error':701, 'message':message} == option name not found
+        {'Value':value} == Seconed part is the options value"""
 
     verfy_result = check.file_exists(file_name, False)
 
@@ -21,10 +21,10 @@ def get_value(file_name, setting_name):
         for line in file.readlines():
             if line[0] == '#' or line[0] == ' ' or line[0] == '\n':
                 pass
-            elif setting_name.upper().strip() == line[:line.find(':')].upper().strip():
+            elif option_name.upper().strip() == line[:line.find(':')].upper().strip():
                 file.close()
                 return {'Value':line[line.find(':')+1:].strip()}
 
         file.close()
-        return {'Error':701, 'message': 'Setting name not found'}
+        return {'Error':701, 'message': 'Option name not found'}
 

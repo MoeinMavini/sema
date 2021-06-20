@@ -12,7 +12,8 @@ def main():
         manage_setting_cli.start()
     else:
         from sema.manage_setting import manage_setting_gui
-        manage_setting_gui.start()
+        app = manage_setting_gui.ManageSettingMainApp()
+        app.run_main()
 
 if __name__ == "__main__":
     main()

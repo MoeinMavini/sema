@@ -1,8 +1,12 @@
-from sema.common import const, get
+from sema.common import get
 import os
 import lxml.etree as ET
 
 def create_setting_file(path):
+    """Returns 200: Successful,
+       701: Selected file is a .setting file
+       702: Selected file is a .setting.xml file"""
+
     if os.path.isfile(path + '.setting'):
         return 701
 
@@ -38,56 +42,9 @@ def create_setting_file(path):
         return e
 
 
-def set_file_description(path_to_dot_setting, description):
-
-    description_list = description.split('\n')
-
-    file_r = open(path_to_dot_setting, 'r')
-    file_temp = open(path_to_dot_setting + '.temp', 'w')
-
-    file_r_contents = file_r.readlines()
-
-    for i in range(const.RESERVE_LINES):
-            file_temp.write(file_r_contents[i])
-
-    for i in range(len(description_list)):
-            if description_list[i] == '\n':
-                continue
-            file_temp.write('#' + description_list[i] + '\n')
-
-    for i in range(get.file_description_lines_num(path_to_dot_setting) + const.RESERVE_LINES , len(file_r_contents)):
-        file_temp.write(file_r_contents[i])
-            
-    file_r.close()
-    file_temp.close()
-
-    os.remove(path_to_dot_setting)
-    os.rename(path_to_dot_setting + '.temp', path_to_dot_setting)
-
-    parser = ET.XMLParser(remove_blank_text=True)
-
-    tree = ET.parse(path_to_dot_setting + '.xml', parser)
-
-    root = tree.getroot()
-
-    element = root.find("Description")
-
-    if element == None:
-        element = ET.Element("Description")
-        element.text = description
-        root.append(element)
-    
-    else:
-        element.text = description
-
-    tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
-
-    return 200
-
-
-def add_setting_to_file(path_to_dot_setting, name, comment):
+def add_option_to_file(path_to_dot_setting, name, comment):
     """Returns 200: Successful,
-       201: Definition for setting already exists in setting.xml file"""
+       201: Definition for option already exists in setting.xml file"""
 
     file = open(path_to_dot_setting, 'a')
 
@@ -101,8 +58,8 @@ def add_setting_to_file(path_to_dot_setting, name, comment):
 
     root = tree.getroot()
                       
-    if root.find("setting[@name='" + name.lower() + "']") == None:
-        element = ET.Element("setting", name=name.lower())
+    if root.find("option[@name='" + name.lower() + "']") == None:
+        element = ET.Element("option", name=name.lower())
         element.text = comment
         root.append(element)
         
@@ -113,9 +70,9 @@ def add_setting_to_file(path_to_dot_setting, name, comment):
         return 201
         
 
-def remove_setting_from_file(path_to_dot_setting, name):
+def remove_option_from_file(path_to_dot_setting, name):
     """Returns 200: Successful,
-       201: Setting removed successfully but Setting didn't exist in setting.xml file
+       201: Option removed successfully but Option didn't exist in setting.xml file
             It causes no problem in removing but means that .setting.xml was corrupted."""
     file_r = open(path_to_dot_setting, 'r')
     file_temp = open(path_to_dot_setting + '.temp', 'w')
@@ -150,7 +107,7 @@ def remove_setting_from_file(path_to_dot_setting, name):
 
     root = tree.getroot()
     
-    element = root.find("setting[@name='" + name.lower().strip() + "']")
+    element = root.find("option[@name='" + name.lower().strip() + "']")
 
     if element != None:
         root.remove(element)
@@ -163,9 +120,9 @@ def remove_setting_from_file(path_to_dot_setting, name):
         return 201
 
 
-def change_setting_name(path_to_dot_setting, current_name, new_name):
+def change_option_name(path_to_dot_setting, current_name, new_name):
     """Returns 200: Successful,
-       201: Setting name was not found in .setting.xml file, file could be corrupted"""
+       201: Option name was not found in .setting.xml file, file could be corrupted"""
     file_r = open(path_to_dot_setting, 'r')
     file_temp = open(path_to_dot_setting + '.temp', 'w')
 
@@ -189,12 +146,12 @@ def change_setting_name(path_to_dot_setting, current_name, new_name):
 
     root = tree.getroot()
     
-    element = root.find("setting[@name='" + new_name.lower().strip() + "']")
+    element = root.find("option[@name='" + new_name.lower().strip() + "']")
 
     if element != None:
         root.remove(element)
 
-    element = root.find("setting[@name='" + current_name.lower().strip() + "']")
+    element = root.find("option[@name='" + current_name.lower().strip() + "']")
 
     if element == None:#This can only happen if .xml file is altered manually
 
@@ -212,7 +169,7 @@ def change_setting_name(path_to_dot_setting, current_name, new_name):
 
         file_r.close()
 
-        element = ET.Element("setting", name=new_name.lower().strip())
+        element = ET.Element("option", name=new_name.lower().strip())
         element.text = comment
         root.append(element)
 
@@ -228,134 +185,17 @@ def change_setting_name(path_to_dot_setting, current_name, new_name):
 
         return 200
 
-def set_default(path_to_dot_setting, setting_name, default_value):
+
+def add_simple_value(path_to_dot_setting, option_name, value, comment):
     """Returns 200: Successful,
-       201: Setting name was not found in .setting.xml file, file could be corrupted"""
-    file_r = open(path_to_dot_setting, 'r')
-    file_temp = open(path_to_dot_setting + '.temp', 'w')
-
-    for line in file_r.readlines():
-        if line[0] == ' ' or line[0] == '\n':
-            pass
-        elif setting_name.upper().strip() == line[:line.find(':')].upper().strip() and line[0] != '#':
-            if line.split(':', 1)[1].strip() == '':
-                file_temp.write(line[:line.find(':')] + ':' + default_value + '\n')
-            else:
-                file_temp.write(line)
-        else:
-            file_temp.write(line)
-
-    file_r.close()
-    file_temp.close()
-
-    os.remove(path_to_dot_setting)
-    os.rename(path_to_dot_setting + '.temp', path_to_dot_setting)
-
-    parser = ET.XMLParser(remove_blank_text=True)
-
-    tree = ET.parse(path_to_dot_setting + '.xml', parser)
-
-    root = tree.getroot()
-    
-    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
-
-    if element == None:#This can only happen if .xml file is altered manually
-
-        file_r = open(path_to_dot_setting, 'r')
-
-        file_r_contents = file_r.readlines()
-        
-        comment = ''
-
-        for i in range(len(file_r_contents)):
-            if file_r_contents[i][0] == '#' and file_r_contents[i+1][0] != '#':
-                if setting_name.upper().strip() == file_r_contents[i+1][:file_r_contents[i+1].find(':')].upper().strip():
-                    comment = file_r_contents[i][1:].replace('\n', '')
-                    break
-
-        file_r.close()
-
-        element = ET.Element("setting", name=setting_name.lower().strip())
-        element.attrib['default']=default_value
-        element.text = comment
-        root.append(element)
-
-        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
-
-        return 201
-    
-    else:
-
-        element.attrib['default'] = default_value
-
-        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
-
-        return 200
-
-
-def set_setting_comment(path_to_dot_setting, setting_name, comment):
-    """Returns 200: Successful,
-       201: Setting name was not found in .setting.xml file, file could be corrupted"""
-    file_r = open(path_to_dot_setting, 'r')
-    file_temp = open(path_to_dot_setting + '.temp', 'w')
-
-    file_r_contents = file_r.readlines()
-
-    for i in range(len(file_r_contents)):
-        if file_r_contents[i][0] == '#' and file_r_contents[i+1][0] != '#':
-            if setting_name.upper().strip() == file_r_contents[i+1][:file_r_contents[i+1].find(':')].upper().strip():
-                file_temp.write('#' + comment + '\n')
-
-            else:
-                file_temp.write(file_r_contents[i])
-        
-        else:
-            file_temp.write(file_r_contents[i])
-
-
-    file_r.close()
-    file_temp.close()
-
-    os.remove(path_to_dot_setting)
-    os.rename(path_to_dot_setting + '.temp', path_to_dot_setting)
-
-    parser = ET.XMLParser(remove_blank_text=True)
-
-    tree = ET.parse(path_to_dot_setting + '.xml', parser)
-
-    root = tree.getroot()
-    
-    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
-
-    if element == None:#This can only happen if .xml file is altered manually
-
-        element = ET.Element("setting", name=setting_name.lower().strip())
-        element.text = comment
-        root.append(element)
-
-        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
-
-        return 201
-    
-    else:
-
-        element.text = comment
-
-        tree.write(path_to_dot_setting + '.xml', xml_declaration=True, pretty_print=True)
-
-        return 200
-
-
-def add_simple_value(path_to_dot_setting, setting_name, value, comment):
-    """Returns 200: Successful,
-       700: Setting not found in .xml file"""
+       700: Option not found in .xml file"""
     parser = ET.XMLParser(remove_blank_text=True)
 
     tree = ET.parse(path_to_dot_setting + '.xml', parser)
 
     root = tree.getroot()
 
-    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+    element = root.find("option[@name='" + option_name.lower().strip() + "']")
 
     if element == None:
         return 700
@@ -372,9 +212,9 @@ def add_simple_value(path_to_dot_setting, setting_name, value, comment):
         return 200
 
 
-def add_range_value(path_to_dot_setting, setting_name, min, max, step, comment):
+def add_range_value(path_to_dot_setting, option_name, min, max, step, comment):
     """Returns 200: Successful,
-       700: Setting not found in .xml file
+       700: Option not found in .xml file
        701: Min is not a number
        702: Max is not a number
        703: step is not a number
@@ -407,7 +247,7 @@ def add_range_value(path_to_dot_setting, setting_name, min, max, step, comment):
 
     root = tree.getroot()
 
-    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+    element = root.find("option[@name='" + option_name.lower().strip() + "']")
 
     if element == None:
         return 700
@@ -427,10 +267,10 @@ def add_range_value(path_to_dot_setting, setting_name, min, max, step, comment):
         return 200
 
 
-def remove_possible_value_by_number(path_to_dot_setting, setting_name, number_from_zero):
-    """Removes a value from a setting by it's position in .xml file
+def remove_possible_value_by_number(path_to_dot_setting, option_name, number_from_zero):
+    """Removes a value from an option by it's position in .xml file
        Return: 200 on success
-               700 on setting not found
+               700 on option not found
                701 number don't exist"""
 
     parser = ET.XMLParser(remove_blank_text=True)
@@ -439,7 +279,7 @@ def remove_possible_value_by_number(path_to_dot_setting, setting_name, number_fr
 
     root = tree.getroot()
 
-    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+    element = root.find("option[@name='" + option_name.lower().strip() + "']")
 
     if element == None:
         return 700
@@ -459,10 +299,10 @@ def remove_possible_value_by_number(path_to_dot_setting, setting_name, number_fr
         return 701
 
 
-def set_value_comment_by_number(path_to_dot_setting, setting_name, number_from_zero, comment):
-    """Sets a comment for a value in setting by it's position in .xml file
+def set_value_comment_by_number(path_to_dot_setting, option_name, number_from_zero, comment):
+    """Sets a comment for a value in option by it's position in .xml file
        Return: 200 on success
-               700 on setting not found
+               700 on option not found
                701 number don't exist"""
 
     parser = ET.XMLParser(remove_blank_text=True)
@@ -471,7 +311,7 @@ def set_value_comment_by_number(path_to_dot_setting, setting_name, number_from_z
 
     root = tree.getroot()
 
-    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+    element = root.find("option[@name='" + option_name.lower().strip() + "']")
 
     if element == None:
         return 700
@@ -491,10 +331,10 @@ def set_value_comment_by_number(path_to_dot_setting, setting_name, number_from_z
         return 701
 
 
-def set_simple_possible_value_by_number(path_to_dot_setting, setting_name, number_from_zero, new_name):
-    """Sets name for a simple value in setting by it's position in .xml file
+def set_simple_possible_value_by_number(path_to_dot_setting, option_name, number_from_zero, new_name):
+    """Sets name for a simple value in option by it's position in .xml file
        Return: 200 on success
-               700 on setting not found
+               700 on option not found
                701 number don't exist"""
 
     parser = ET.XMLParser(remove_blank_text=True)
@@ -503,7 +343,7 @@ def set_simple_possible_value_by_number(path_to_dot_setting, setting_name, numbe
 
     root = tree.getroot()
 
-    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+    element = root.find("option[@name='" + option_name.lower().strip() + "']")
 
     if element == None:
         return 700
@@ -523,10 +363,10 @@ def set_simple_possible_value_by_number(path_to_dot_setting, setting_name, numbe
         return 701
 
 
-def set_ranged_possible_value_by_number(path_to_dot_setting, setting_name, number_from_zero, min, max, step):
-    """Sets values for a ranged value in setting by it's position in .xml file
+def set_ranged_possible_value_by_number(path_to_dot_setting, option_name, number_from_zero, min, max, step):
+    """Sets values for a ranged value in option by it's position in .xml file
        Return: 200 on success
-               700 on setting not found
+               700 on option not found
                701 number don't exist
                703 Can't have 3 empty values"""
 
@@ -540,7 +380,7 @@ def set_ranged_possible_value_by_number(path_to_dot_setting, setting_name, numbe
 
     root = tree.getroot()
 
-    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+    element = root.find("option[@name='" + option_name.lower().strip() + "']")
 
     if element == None:
         return 700

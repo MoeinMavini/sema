@@ -178,10 +178,10 @@ class ChangeSettingMainApp:
         self.possible_values_frame.pack_forget()
 
         path = self.file_combobox.get()
-        setting_list = get.setting_names_in_file(path)
+        option_list = get.option_names_in_file(path)
 
-        if len(setting_list) == 0:
-            tk.messagebox.showwarning(title='No Settings', message='This file has no settings!')
+        if len(option_list) == 0:
+            tk.messagebox.showwarning(title='No options', message='This file has no options!')
         else:
             if os.path.isfile(path + '.xml'):
                 self.has_dot_xml = True
@@ -200,11 +200,11 @@ class ChangeSettingMainApp:
 
             self.frame1.pack_forget()
             
-            for i in range(len(setting_list)):
-                comment = get.setting_comment(path, setting_list[i])
+            for i in range(len(option_list)):
+                comment = get.option_comment(path, option_list[i])
 
                 if comment != None:
-                    setting_list[i] = setting_list[i] + ': ' + comment
+                    option_list[i] = option_list[i] + ': ' + comment
 
             file_desciption  = get.file_description(path)
             
@@ -219,15 +219,15 @@ class ChangeSettingMainApp:
     
     def switch_to_possible_values(self):
         path = self.file_combobox.get()
-        setting = get.setting_names_in_file(path)[self.select_setting_combobox.current()]
+        option = get.option_names_in_file(path)[self.select_setting_combobox.current()]
         self.possible_values = []
 
         self.inside_file_frame.pack_forget()
 
         if self.has_dot_xml:
             i = 1
-            for value in get.setting_values(path, setting):
-                comment = get.possible_value_by_number(path, setting, i-1)['comment']
+            for value in get.option_values(path, option):
+                comment = get.possible_value_by_number(path, option, i-1)['comment']
                 if comment == None:
                     comment = ''
                 else:
@@ -270,9 +270,9 @@ class ChangeSettingMainApp:
             tk.messagebox.showwarning(title="Unspecified Error", message="Unspecified Error")
         else:
             path = self.file_combobox.get()
-            setting = get.setting_names_in_file(path)[self.select_setting_combobox.current()]
+            option = get.option_names_in_file(path)[self.select_setting_combobox.current()]
 
-            response = set.setting_value(path, setting, value)
+            response = set.option_value(path, option, value)
         
             if response == 200:
                 self.switch_to_before_set_value()
@@ -290,9 +290,9 @@ class ChangeSettingMainApp:
         else:
 
             path = self.file_combobox.get()
-            setting = get.setting_names_in_file(path)[self.select_setting_combobox.current()]
+            option = get.option_names_in_file(path)[self.select_setting_combobox.current()]
 
-            value = get.possible_value_by_number(path, setting, self.select_value_combobox.current())
+            value = get.possible_value_by_number(path, option, self.select_value_combobox.current())
                                                         
             if 'min' in value:# Check if value is ranged
                 self.numeric_value_spinbox.delete(0, 'end')
@@ -323,7 +323,7 @@ class ChangeSettingMainApp:
                 self.numeric_value_frame.pack(side='top')
 
             elif 'name' in value: # Value is a single choice
-                response = set.setting_value(path, setting, value['name'])
+                response = set.option_value(path, option, value['name'])
 
                 if response == 200:
                     self.switch_to_before_set_value()
@@ -336,9 +336,9 @@ class ChangeSettingMainApp:
         number = float(self.numeric_value_spinbox.get())
 
         path = self.file_combobox.get()
-        setting = get.setting_names_in_file(path)[self.select_setting_combobox.current()]
+        option = get.option_names_in_file(path)[self.select_setting_combobox.current()]
 
-        value = get.possible_value_by_number(path, setting, self.select_value_combobox.current())
+        value = get.possible_value_by_number(path, option, self.select_value_combobox.current())
 
         diff_from_step = check.diff_to_step(value['min'], value['max'], value['step'], number)
 
@@ -349,7 +349,7 @@ class ChangeSettingMainApp:
         elif value['step'] != None and value['step'] != '' and diff_from_step != 0:
             tk.messagebox.showwarning(title='Out of range', message='Number fails the step constraint by ' + str(diff_from_step))
         else:                                           
-            response = set.setting_value(path, setting, number)
+            response = set.option_value(path, option, number)
 
             if response == 200:
                 self.switch_to_before_set_value()
@@ -360,5 +360,4 @@ class ChangeSettingMainApp:
 if __name__ == '__main__':
     app = ChangeSettingMainApp()
     app.run_main(True)
-
 

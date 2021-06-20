@@ -42,7 +42,7 @@ def file_exists(path, complete=True):
                 return path + '.setting'
 
 
-def setting_exists_in_file(path_of_dot_setting, name):
+def option_exists_in_file(path_of_dot_setting, name):
     file = open(path_of_dot_setting, 'r')
 
     for line in file.readlines():
@@ -56,7 +56,7 @@ def setting_exists_in_file(path_of_dot_setting, name):
     return False
 
 
-def setting_simple_value_exists(path_to_dot_setting, setting_name, value):
+def option_simple_value_exists(path_to_dot_setting, option_name, value):
     
     parser = ET.XMLParser(remove_blank_text=True)
 
@@ -64,7 +64,7 @@ def setting_simple_value_exists(path_to_dot_setting, setting_name, value):
 
     root = tree.getroot()
 
-    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+    element = root.find("option[@name='" + option_name.lower().strip() + "']")
 
     if element == None:
         return False
@@ -79,7 +79,7 @@ def setting_simple_value_exists(path_to_dot_setting, setting_name, value):
             return True
 
 
-def setting_renage_value_exists(path_to_dot_setting, setting_name, min, max, step):
+def option_renage_value_exists(path_to_dot_setting, option_name, min, max, step):
     
     parser = ET.XMLParser(remove_blank_text=True)
 
@@ -87,7 +87,7 @@ def setting_renage_value_exists(path_to_dot_setting, setting_name, min, max, ste
 
     root = tree.getroot()
 
-    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+    element = root.find("option[@name='" + option_name.lower().strip() + "']")
 
     if element == None:
         return False
@@ -142,8 +142,8 @@ def diff_to_step(min, max, step, value):
         return round(min - (value - step), round_by)
 
 
-def setting_name(name):
-    """Checks if setting name is valid 
+def option_name(name):
+    """Checks if option name is valid 
     
         Returns:
             200 if ok,

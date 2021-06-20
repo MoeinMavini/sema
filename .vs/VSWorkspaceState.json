@@ -1,7 +1,11 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\change_setting",
+    "\\sema",
+    "\\sema\\common",
+    "\\sema\\manage_setting"
   ],
-  "SelectedNode": "\\setup.cfg",
+  "SelectedNode": "\\sema\\manage_setting\\manage_setting_gui.py",
   "PreviewInSolutionExplorer": false
 }

@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='ASCII'?>
 <root>
-  <Description>This setting is for the characteristics of 
-ascending or descending shape.</Description>
-  <setting name="ascending" default="true">Is the shape ascending or descending<value name="true">Ascending</value><value name="false">Descending</value></setting>
-  <setting name="char" default="*">Character that is used for the shape</setting>
-  <setting name="lenght" default="9">Lenght of the biggest line<range min="3" max="50" step="1"/></setting>
-  <setting name="position" default="middle">Position that shape forms based on<value name="rtl">Right to left</value><value name="middle"/><value name="ltr">Left to right</value></setting>
+  <Description>This setting is for the characteristics of the
+ascending-descending shape.</Description>
+  <option name="ascending" default="true">Is the shape ascending or descending<value name="true">Ascending</value><value name="false">Descending</value></option>
+  <option name="char" default="*">Character that is used for the shape</option>
+  <option name="lenght" default="9">Lenght of the biggest line<range min="3" max="50" step="1"/></option>
+  <option name="position" default="middle">Position that shape forms based on<value name="rtl">Right to left</value><value name="middle"/><value name="ltr">Left to right</value></option>
 </root>

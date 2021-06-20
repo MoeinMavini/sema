@@ -1,8 +1,8 @@
 import os
 import lxml.etree as ET
 
-def setting_names_in_file(path_of_dot_setting):
-    """Return a list of settings in the specified file"""
+def option_names_in_file(path_of_dot_setting):
+    """Return a list of options in the specified file"""
     name_list = []
 
     if os.path.isfile(path_of_dot_setting):
@@ -17,7 +17,7 @@ def setting_names_in_file(path_of_dot_setting):
     return name_list
 
 
-def setting_comment(path_to_dot_setting, setting_name):
+def option_comment(path_to_dot_setting, option_name):
 
     if os.path.isfile(path_to_dot_setting + '.xml'):
 
@@ -27,7 +27,7 @@ def setting_comment(path_to_dot_setting, setting_name):
 
         root = tree.getroot()
     
-        element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+        element = root.find("option[@name='" + option_name.lower().strip() + "']")
 
         if element == None:
             return None
@@ -74,7 +74,7 @@ def file_description_lines_num(path_to_dot_setting):
         return len(element.text.split('\n'))
 
 
-def setting_values(path_to_dot_setting, setting_name):
+def option_values(path_to_dot_setting, option_name):
     """Returns a list of all values including ranged values"""
     parser = ET.XMLParser(remove_blank_text=True)
 
@@ -82,7 +82,7 @@ def setting_values(path_to_dot_setting, setting_name):
 
     root = tree.getroot()
 
-    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+    element = root.find("option[@name='" + option_name.lower().strip() + "']")
     
     value_list = []
 
@@ -112,11 +112,11 @@ def setting_values(path_to_dot_setting, setting_name):
     return value_list
 
 
-def possible_value_by_number(path_to_dot_setting, setting_name, number_from_zero):
-    """Returns a value from setting by it's position in .xml file
+def possible_value_by_number(path_to_dot_setting, option_name, number_from_zero):
+    """Returns a value from option by it's position in .xml file
        If value is simple returns {'name':value, 'comment':comment}
        If value is range returns {'min':value, 'max':value, 'step':value,'comment':comment}
-       700 on setting not found
+       700 on option not found
        701 number don't exist"""
 
     parser = ET.XMLParser(remove_blank_text=True)
@@ -125,7 +125,7 @@ def possible_value_by_number(path_to_dot_setting, setting_name, number_from_zero
 
     root = tree.getroot()
 
-    element = root.find("setting[@name='" + setting_name.lower().strip() + "']")
+    element = root.find("option[@name='" + option_name.lower().strip() + "']")
 
     if element == None:
         return 700
@@ -143,4 +143,25 @@ def possible_value_by_number(path_to_dot_setting, setting_name, number_from_zero
             return {'min':value_element.attrib['min'], 'max':value_element.attrib['max'], 'step':value_element.attrib['step'],'comment':value_element.text}
     else:
         return 701
+
+
+def default_value(path_to_dot_setting, option_name):
+    """Returns the default value of an option
+       700 on option not found"""
+
+    parser = ET.XMLParser(remove_blank_text=True)
+
+    tree = ET.parse(path_to_dot_setting + '.xml', parser)
+
+    root = tree.getroot()
+
+    element = root.find("option[@name='" + option_name.lower().strip() + "']")
+
+    if element == None:
+        return 700
+
+    if 'default' in element.attrib:
+        return element.attrib['default']
+    else:
+        return ''
 

@@ -1,4 +1,4 @@
-from sema.common import check, get, cli
+from sema.common import check, get, cli, set
 from sema.manage_setting import common
 
 def start():
@@ -38,7 +38,7 @@ def start():
                     description = cli.get_multiline_input('\nEnter any description you may have for this file')
 
                     if description != '':
-                        common.set_file_description(path + '.setting', description)
+                        set.file_description(path + '.setting', description)
 
                     print('\nSetting file created successfully')
 
@@ -58,11 +58,11 @@ def start():
 def edit(path_to_dot_setting):
     path = path_to_dot_setting
 
-    print('\nThis file contains these settings: ' + str(get.setting_names_in_file(path)))
+    print('\nThis file contains these options: ' + str(get.option_names_in_file(path)))
 
     while True:
-        choice = input("\nEnter '1' to edit a setting\nEnter '2' to add a new setting\n"
-                        "Enter '3' to remove a setting\nEnter '4' to see the list of settings in current file\n"
+        choice = input("\nEnter '1' to edit a option\nEnter '2' to add a new option\n"
+                        "Enter '3' to remove a option\nEnter '4' to see the list of options in current file\n"
                         "Enter '5' to set description for this file\nEnter 0 to get back\n\n->").strip()
 
         if choice == '0' or choice == '':
@@ -70,9 +70,9 @@ def edit(path_to_dot_setting):
 
         elif choice == '1':
             while True:
-                name = input('Enter the setting name: ').strip()
+                name = input('Enter the option name: ').strip()
 
-                name_check = check.setting_name(name)
+                name_check = check.option_name(name)
 
                 if name_check == 701:
                     print("\nName must not contain ':'\n")
@@ -86,12 +86,12 @@ def edit(path_to_dot_setting):
                     print("\nError: Name includes new line\n")
                 elif name_check != 200:
                     print("\nUnspecified Error\n")
-                elif not check.setting_exists_in_file(path, name):
-                    print('\nSetting not found!\n')
+                elif not check.option_exists_in_file(path, name):
+                    print('\nOption not found!\n')
                 else:
                     while True:
-                        choice = input("\nEnter '1' to change setting name\nEnter '2' to change default value\n"
-                        "Enter '3' to change comment\nEnter '4' to manage possible values for this setting\n"
+                        choice = input("\nEnter '1' to change option name\nEnter '2' to change default value\n"
+                        "Enter '3' to change comment\nEnter '4' to manage possible values for this option\n"
                         "Enter 0 to get back\n\n->").strip()
 
                         if choice == '0' or choice == '':
@@ -99,9 +99,9 @@ def edit(path_to_dot_setting):
 
                         elif choice == '1':
                             while True:
-                                new_name = input('Enter new setting name: ').strip()
+                                new_name = input('Enter new option name: ').strip()
 
-                                name_check = check.setting_name(new_name)
+                                name_check = check.option_name(new_name)
 
                                 if name_check == 701:
                                     print("\nName must not contain ':'\n")
@@ -115,15 +115,15 @@ def edit(path_to_dot_setting):
                                     break
                                 elif name_check != 200:
                                     print("\nUnspecified Error\n")
-                                elif check.setting_exists_in_file(path, new_name):
-                                    print('\nThis setting name already exists!\n')
+                                elif check.option_exists_in_file(path, new_name):
+                                    print('\nThis option name already exists!\n')
                                 else:
-                                    response = common.change_setting_name(path, name, new_name)
+                                    response = common.change_option_name(path, name, new_name)
 
                                     if response == 200:
                                         print('\nName changed successfully.\n')
                                     elif response == 201:
-                                        print('\nName changed successfully.\nCaution: Setting name was not found in .setting.xml file, file could be corrupted\n')
+                                        print('\nName changed successfully.\nCaution: Option name was not found in .setting.xml file, file could be corrupted\n')
                                     break
 
                         elif choice == '2':
@@ -141,12 +141,12 @@ def edit(path_to_dot_setting):
                                 elif value == '':
                                     break
                                 else:
-                                    response = common.set_default(path, name, value)
+                                    response = set.default(path, name, value)
 
                                     if response == 200:
                                         print('\nDefault value set successfully.\n')
                                     elif response == 201:
-                                        print('\nDefault value set successfully.\nCaution: Setting name was not found in .setting.xml file, file could be corrupted\n')
+                                        print('\nDefault value set successfully.\nCaution: Option name was not found in .setting.xml file, file could be corrupted\n')
                                     break
 
                         elif choice == '3':
@@ -158,21 +158,21 @@ def edit(path_to_dot_setting):
                                 elif comment == '':
                                     break
                                 else:
-                                    response = common.set_setting_comment(path, name, comment)
+                                    response = set.option_comment(path, name, comment)
 
                                     if response == 200:
                                         print('\nComment set successfully.\n')
                                     elif response == 201:
-                                        print('\nComment set successfully.\nCaution: Setting name was not found in .setting.xml file, file could be corrupted\n')
+                                        print('\nComment set successfully.\nCaution: Option name was not found in .setting.xml file, file could be corrupted\n')
 
                                     break
 
                         elif choice == '4':
-                            show_setting_values(path, name)
+                            show_option_values(path, name)
 
                             while True:
                                 choice = input("\nEnter '1' to add a value\nEnter '2' to edit a value\n"
-                                "Enter '3' to remove a values\nEnter '4' to see a list of current values\n"
+                                "Enter '3' to remove a value\nEnter '4' to see a list of current values\n"
                                 "Enter 0 to get back\n\n->").strip()
 
                                 if choice == '0' or choice == '':
@@ -200,11 +200,11 @@ def edit(path_to_dot_setting):
                                                     print("\nUnspecified Error\n")
                                                 elif value == '':
                                                     break
-                                                elif check.setting_simple_value_exists(path, name, value):
+                                                elif check.option_simple_value_exists(path, name, value):
                                                     print('\nThis value already exists!\n')
                                                 else:
                                                     while True:
-                                                        comment = input('Enter the single line comment for setting: ').strip()
+                                                        comment = input('Enter the single line comment for option: ').strip()
 
                                                         if '\n' in comment:
                                                             print("\nError: Comment includes new line\n")
@@ -258,11 +258,11 @@ def edit(path_to_dot_setting):
                                             if min == max == step == '':
                                                 continue
 
-                                            elif check.setting_renage_value_exists(path, name, min, max, step):
+                                            elif check.option_renage_value_exists(path, name, min, max, step):
                                                     print('\nThis range is already added!\n')
                                             else:
                                                 while True:
-                                                    comment = input('Enter the single line comment for setting: ').strip()
+                                                    comment = input('Enter the single line comment for option: ').strip()
 
                                                     if '\n' in comment:
                                                         print("\nError: Comment includes new line\n")
@@ -279,10 +279,10 @@ def edit(path_to_dot_setting):
                                             print('\nCommand not found!\n')
 
                                 elif choice == '2':
-                                    number_of_values = len(get.setting_values(path, name))
+                                    number_of_values = len(get.option_values(path, name))
 
                                     if number_of_values == 0:
-                                        print('\nSetting has no values\n')
+                                        print('\nOption has no values\n')
                                     else:
                                         choice = input('\nEnter the number of value you want to edit (1 to ' + str(number_of_values) + '): ').strip()
 
@@ -301,7 +301,7 @@ def edit(path_to_dot_setting):
 
                                                     elif action == '1':
                                                         while True:
-                                                            comment = input('Enter the single line comment for setting: ').strip()
+                                                            comment = input('Enter the single line comment for option: ').strip()
 
                                                             if '\n' in comment:
                                                                 print("\nError: Comment includes new line\n")
@@ -339,7 +339,7 @@ def edit(path_to_dot_setting):
                                                                         if min == value['max'] == value['step'] == '':
                                                                             print('\nCannot have min, max and step empty\n')
 
-                                                                        elif check.setting_renage_value_exists(path, name, min, value['max'], value['step']):
+                                                                        elif check.option_renage_value_exists(path, name, min, value['max'], value['step']):
                                                                                 print('\nThis range is already added!\n')
                                                                         else:
                                                                             response = common.set_ranged_possible_value_by_number(path, name, choice-1, min, value['max'], value['step'])
@@ -364,7 +364,7 @@ def edit(path_to_dot_setting):
                                                                         if value['min'] == max == value['step'] == '':
                                                                             print('\nCannot have min, max and step empty\n')
 
-                                                                        elif check.setting_renage_value_exists(path, name, value['min'], max, value['step']):
+                                                                        elif check.option_renage_value_exists(path, name, value['min'], max, value['step']):
                                                                                 print('\nThis range is already added!\n')
                                                                         else:
                                                                             response = common.set_ranged_possible_value_by_number(path, name, choice-1, value['min'], max, value['step'])
@@ -389,7 +389,7 @@ def edit(path_to_dot_setting):
                                                                         if value['min'] == value['max'] == step == '':
                                                                             print('\nCannot have min, max and step empty\n')
 
-                                                                        elif check.setting_renage_value_exists(path, name, value['min'], value['max'], step):
+                                                                        elif check.option_renage_value_exists(path, name, value['min'], value['max'], step):
                                                                                 print('\nThis range is already added!\n')
                                                                         else:
                                                                             response = common.set_ranged_possible_value_by_number(path, name, choice-1, value['min'], value['max'], step)
@@ -417,7 +417,7 @@ def edit(path_to_dot_setting):
                                                                     print("\nUnspecified Error\n")
                                                                 elif value == '':
                                                                     break
-                                                                elif check.setting_simple_value_exists(path, name, value):
+                                                                elif check.option_simple_value_exists(path, name, value):
                                                                     print('\nThis value already exists!\n')
                                                                 else:
                                                                     response = common.set_simple_possible_value_by_number(path, name, choice-1, value)
@@ -436,10 +436,10 @@ def edit(path_to_dot_setting):
 
                                 elif choice == '3':
 
-                                    number_of_values = len(get.setting_values(path, name))
+                                    number_of_values = len(get.option_values(path, name))
 
                                     if number_of_values == 0:
-                                        print('\nSetting has no values\n')
+                                        print('\nOption has no values\n')
                                     else:
                                         choice = input('\nEnter the number of value you want to be removed (1 to ' + str(number_of_values) + '): ').strip()
 
@@ -456,7 +456,7 @@ def edit(path_to_dot_setting):
                                             print('\nInput must be a number\n')
 
                                 elif choice == '4':
-                                    show_setting_values(path, name)
+                                    show_option_values(path, name)
 
                                 else:
                                     print('\nCommand not found!\n')
@@ -468,9 +468,9 @@ def edit(path_to_dot_setting):
 
         elif choice == '2':
             while True:
-                name = input('Enter the setting name: ').strip()
+                name = input('Enter the option name: ').strip()
 
-                name_check = check.setting_name(name)
+                name_check = check.option_name(name)
 
                 if name_check == 701:
                     print("\nName must not contain ':'\n")
@@ -484,29 +484,29 @@ def edit(path_to_dot_setting):
                     print("\nError: Name includes new line\n")
                 elif name_check != 200:
                     print("\nUnspecified Error\n")
-                elif check.setting_exists_in_file(path, name):
-                    print('\nThis setting name already exists!\n')
+                elif check.option_exists_in_file(path, name):
+                    print('\nThis option name already exists!\n')
                 else:
                     while True:
-                        comment = input('Enter the single line comment for setting: ').strip()
+                        comment = input('Enter the single line comment for option: ').strip()
 
                         if '\n' in comment:
                             print("\nError: Comment includes new line\n")
                         else:
-                            response = common.add_setting_to_file(path, name, comment)
+                            response = common.add_option_to_file(path, name, comment)
 
                             if response == 200:
-                                print('\nSetting created successfully\n')
+                                print('\nOption created successfully\n')
                             elif response == 201:
-                                print('\nCaution: Definition for setting ' + name + ' already exists in setting.xml file\n')
+                                print('\nCaution: Option created successfully! Definition for option ' + name + ' already exists in setting.xml file\n')
                             break
                 break
 
         elif choice == '3':
             while True:
-                name = input('Enter the setting name: ').strip()
+                name = input('Enter the option name: ').strip()
 
-                name_check = check.setting_name(name)
+                name_check = check.option_name(name)
 
                 if name_check == 701:
                     print("\nName must not contain ':'\n")
@@ -520,26 +520,26 @@ def edit(path_to_dot_setting):
                     print("\nError: Name includes new line\n")
                 elif name_check != 200:
                     print("\nUnspecified Error\n")
-                elif not check.setting_exists_in_file(path, name):
-                    print('\nSetting with this name does not exist!\n')
+                elif not check.option_exists_in_file(path, name):
+                    print('\nOption with this name does not exist!\n')
                 else:
-                    response = common.remove_setting_from_file(path, name)
+                    response = common.remove_option_from_file(path, name)
 
                     if response == 200:
-                        print('\nSetting removed successfully\n')
+                        print('\nOption removed successfully\n')
                     elif response == 201:
-                        print("\nCaution: Setting removed successfully but Setting '" + name + "' didn't exist in setting.xml file.\n"
+                        print("\nCaution: Option removed successfully but Option '" + name + "' didn't exist in setting.xml file.\n"
                             "It causes no problem in removing but means that your .setting.xml was corrupted.\n")
                     break
 
         elif choice == '4':
-            print('\nThis file contains these settings: ' + str(get.setting_names_in_file(path)))
+            print('\nThis file contains these options: ' + str(get.option_names_in_file(path)))
 
         elif choice == '5':
             description = cli.get_multiline_input('\nEnter any description you may have for this file')
 
             if description != '':
-                common.set_file_description(path, description)
+                set.file_description(path, description)
             
             print('\nDescription changed successfully\n')
 
@@ -547,10 +547,10 @@ def edit(path_to_dot_setting):
             print('\nCommand not found!\n')
 
 
-def show_setting_values(path_to_dot_setting, setting_name):
+def show_option_values(path_to_dot_setting, option_name):
     print('\nCurrent values are: ', end ="" )
     i = 1
-    for value in get.setting_values(path_to_dot_setting, setting_name):
+    for value in get.option_values(path_to_dot_setting, option_name):
         print(str(i) + '.' + value, end =", " )
         i += 1
 

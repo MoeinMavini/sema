@@ -49,10 +49,10 @@ else:
             else:
                 path = approved_dot_setting_list[choice-1]
 
-                setting_list = get.setting_names_in_file(path)
+                option_list = get.option_names_in_file(path)
 
-                if len(setting_list) == 0:
-                    print('\nThis file has no setting\n')
+                if len(option_list) == 0:
+                    print('\nThis file has no options\n')
                     continue
 
                 has_dot_xml = True
@@ -66,18 +66,18 @@ else:
                 if description != None:
                     print('\nSetting file description: ' +  description + '\n')
 
-                for i in range(len(setting_list)):
-                    comment = get.setting_comment(path, setting_list[i])
+                for i in range(len(option_list)):
+                    comment = get.option_comment(path, option_list[i])
 
                     if comment != None:
                         comment = ': ' + comment
                     else:
                         comment = ': '
 
-                    print(str(i+1) + '. ' + setting_list[i] + comment)
+                    print(str(i+1) + '. ' + option_list[i] + comment)
 
                 while True:
-                    choice = input("\nEnter the number of setting to change it's value (1 to " + str(len(setting_list)) + ", 0 to get back): ").strip()
+                    choice = input("\nEnter the number of option to change it's value (1 to " + str(len(option_list)) + ", 0 to get back): ").strip()
 
                     if choice == '0' or choice == '':
                         break
@@ -85,17 +85,17 @@ else:
                     elif choice.isdecimal():
                         choice = int(choice)
 
-                        if choice < 1 or choice > len(setting_list):
+                        if choice < 1 or choice > len(option_list):
                             print('\nNumber is not in range!\n')
                         else:
-                            setting_name = setting_list[choice-1]
+                            option_name = option_list[choice-1]
 
                             if has_dot_xml:
 
                                 print('\nPossible values are: ', end ="" )
                                 i = 1
-                                for value in get.setting_values(path, setting_name):
-                                    comment = get.possible_value_by_number(path, setting_name, i-1)['comment']
+                                for value in get.option_values(path, option_name):
+                                    comment = get.possible_value_by_number(path, option_name, i-1)['comment']
                                     if comment == None:
                                         comment = ''
                                     else:
@@ -106,7 +106,7 @@ else:
 
                                 print(str(i) + '.Manual value')
 
-                                number_of_values = len(get.setting_values(path, setting_name))
+                                number_of_values = len(get.option_values(path, option_name))
 
                                 while True:
                                     choice = input('\nEnter the number of value you want to set (1 to ' + str( number_of_values + 1) + ', 0 to get back): ').strip()
@@ -135,7 +135,7 @@ else:
                                                 elif value == '':
                                                     break
                                                 else:
-                                                    response = set.setting_value(path, setting_name, value)
+                                                    response = set.option_value(path, option_name, value)
 
                                                     if response == 200:
                                                         print('\nValue set successfully.\n')
@@ -143,7 +143,7 @@ else:
                                                         print('\n701 Error\n')
                                                     break
                                         else:
-                                            value = get.possible_value_by_number(path, setting_name, choice-1)
+                                            value = get.possible_value_by_number(path, option_name, choice-1)
                                                         
                                             if 'min' in value:#Check if value is ranged
                                                 while True:
@@ -173,7 +173,7 @@ else:
                                                             print('\nNumber fails the step constraint by ' + str(diff_from_step) + '\n')
                                                             continue
                                                     
-                                                    response = set.setting_value(path, setting_name, number)
+                                                    response = set.option_value(path, option_name, number)
 
                                                     if response == 200:
                                                         print('\nNumber set successfully.\n')
@@ -182,7 +182,7 @@ else:
                                                     break
                                                               
                                             elif 'name' in value:
-                                                response = set.setting_value(path, setting_name, value['name'])
+                                                response = set.option_value(path, option_name, value['name'])
 
                                                 if response == 200:
                                                     print('\nValue set successfully.\n')
@@ -205,7 +205,7 @@ else:
                                     elif value == '':
                                         break
                                     else:
-                                        response = set.setting_value(path, setting_name, value)
+                                        response = set.option_value(path, option_name, value)
 
                                         if response == 200:
                                             print('\nValue set successfully.\n')
