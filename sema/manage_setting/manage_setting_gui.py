@@ -2,6 +2,7 @@ import re
 import sys
 from sema.common import check, get, set
 from sema.manage_setting import common
+import textwrap
 import tkinter as tk
 import tkinter.filedialog
 from tkinter import messagebox
@@ -24,7 +25,7 @@ class ManageSettingMainApp:
         self.main_frame_label = ttk.Label(self.main_frame)
         self.main_frame_label.configure(text='''Welcome to sema setting maker,
 This is the developer tool to make settings and edit created settings.\n
-Use buttons below to create or open a setting maker setting.''')
+Use buttons below to create or open a setting maker file.''')
         self.main_frame_label.pack(padx='10', pady='10', side='top')
         self.new_file_button = ttk.Button(self.main_frame)
         self.new_file_button.configure(text='New')
@@ -63,6 +64,11 @@ Use buttons below to create or open a setting maker setting.''')
         self.edit_file_back.configure(text='Back')
         self.edit_file_back.pack(anchor='w', side='top')
         self.edit_file_back.bind('<Button-1>', lambda event: ManageSettingMainApp.switch_to_main(self))
+        self.edit_file_description_label = ttk.Label(self.edit_file_frame)
+        self.edit_file_description_label.pack(anchor='w', padx='10', pady='10 0', side='top')
+        self.separator1 = ttk.Separator(self.edit_file_frame)
+        self.separator1.configure(orient='horizontal')
+        self.separator1.pack(expand='true', fill='x', pady='5', side='top')
         self.edit_file_sub_frame = ttk.Frame(self.edit_file_frame)
         self.edit_file_label = ttk.Label(self.edit_file_sub_frame)
         self.edit_file_label.configure(text='Options: ')
@@ -80,9 +86,9 @@ Use buttons below to create or open a setting maker setting.''')
         self.edit_file_remove_button.bind('<Button-1>', lambda event: ManageSettingMainApp.on_option_remove_event(self))
         self.edit_file_sub_frame.configure(height='200', width='200')
         self.edit_file_sub_frame.pack(padx='10', pady='10', side='top')
-        self.edit_file_separator = ttk.Separator(self.edit_file_frame)
-        self.edit_file_separator.configure(orient='horizontal')
-        self.edit_file_separator.pack(expand='true', fill='x', padx='3', side='top')
+        self.edit_file_separator_2 = ttk.Separator(self.edit_file_frame)
+        self.edit_file_separator_2.configure(orient='horizontal')
+        self.edit_file_separator_2.pack(expand='true', fill='x', padx='3', side='top')
         self.edit_file_new_button = ttk.Button(self.edit_file_frame)
         self.edit_file_new_button.configure(text='Add Option')
         self.edit_file_new_button.pack(padx='10', pady='5', side='left')
@@ -388,6 +394,15 @@ Use buttons below to create or open a setting maker setting.''')
         self.main_frame.pack_forget()
         self.file_description_frame.pack_forget()
         
+        file_description = get.file_description(self.current_path)
+
+        if file_description != None:
+            file_description = file_description.replace('\n', ' ')
+            file_description = textwrap.fill(file_description, width=80)
+
+
+        self.edit_file_description_label.configure(text = file_description)
+
         options_list = get.option_names_in_file(self.current_path)
 
         if options_list == []:
@@ -777,8 +792,13 @@ Use buttons below to create or open a setting maker setting.''')
     def switch_to_file_description(self):
         self.edit_file_frame.pack_forget()
 
+        description = get.file_description(self.current_path)
+
+        if description == None:
+            description = ''
+
         self.file_description_text.delete('1.0', tk.END)
-        self.file_description_text.insert('1.0', get.file_description(self.current_path))
+        self.file_description_text.insert('1.0', description)
 
         self.file_description_frame.pack(side='top')
 

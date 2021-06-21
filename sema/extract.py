@@ -1,5 +1,5 @@
 """This library is used to extract data from a setting maker file in code
-For now it has only one function: get_value to get value of an option"""
+it has only one function: get_value to get value of an option"""
 from sema.common import check
 
 def get_value(file_name, option_name):
@@ -9,7 +9,7 @@ def get_value(file_name, option_name):
     returns:
         {'Error':700, 'message':message} == .setting file not found! this file holds the values
         {'Error':701, 'message':message} == option name not found
-        {'Value':value} == Seconed part is the options value"""
+        {'Value':value} == Returns options value"""
 
     verfy_result = check.file_exists(file_name, False)
 

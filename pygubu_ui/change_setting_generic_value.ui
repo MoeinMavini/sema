@@ -22,6 +22,7 @@
         <property name="orient">horizontal</property>
         <layout manager="pack">
           <property name="fill">x</property>
+          <property name="pady">5 0</property>
           <property name="propagate">True</property>
           <property name="side">top</property>
         </layout>

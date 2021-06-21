@@ -1,6 +1,7 @@
-from enum import Enum
 from sema.common import check, get, set
+from sema import extract
 import sys
+import textwrap
 import tkinter as tk
 from tkinter import messagebox
 import tkinter.ttk as ttk
@@ -10,17 +11,13 @@ import os
 #Otherwise line below will be used
 dot_setting_list = []#List of .setting files associated to this program
 
-class value_frame_scources(Enum): # Frames that value frame was initiated from
-        POSSIBLE_VALUES = 0
-        INSIDE_FILE = 1
-
 class ChangeSettingMainApp:
 
     file_description_part_1 = 'Setting file description: '
+    current_value_part_1 = 'Current value is: '
     dot_setting_list = dot_setting_list
     approved_dot_setting_list = []
     has_dot_xml = False # If selected .setting has .setting.xml file with it
-    value_frame_scource = value_frame_scources.POSSIBLE_VALUES # Frame that value frame was initiated from
     possible_values = []
 
 
@@ -33,13 +30,13 @@ class ChangeSettingMainApp:
         self.frame1 = ttk.Frame(self.toplevel1)
         self.file_label = ttk.Label(self.frame1)
         self.file_label.configure(text='Select the setting file')
-        self.file_label.pack(padx='80', side='top')
+        self.file_label.pack(padx='80', pady='5', side='top')
         self.file_combobox = ttk.Combobox(self.frame1)
         self.file_combobox.configure(justify='left', state='readonly')
-        self.file_combobox.pack(expand='true', fill='x', side='top')
+        self.file_combobox.pack(expand='true', fill='x', padx='5', side='top')
         self.file_button = ttk.Button(self.frame1)
         self.file_button.configure(text='Accept')
-        self.file_button.pack(side='top')
+        self.file_button.pack(pady='5', side='top')
         self.file_button.bind('<Button-1>', lambda event: ChangeSettingMainApp.switch_to_inside_file(self))
         self.frame1.configure(height='200', width='200')
         self.frame1.pack(fill='both', side='top')
@@ -52,6 +49,9 @@ class ChangeSettingMainApp:
         self.back_to_main_button.configure(text='Back')
         self.back_to_main_button.pack(anchor='w', side='top')
         self.back_to_main_button.bind('<Button-1>', lambda event: ChangeSettingMainApp.switch_to_main(self))
+        self.inside_file_sparator = ttk.Separator(self.inside_file_frame)
+        self.inside_file_sparator.configure(orient='horizontal')
+        self.inside_file_sparator.pack(expand='true', fill='x', pady='5 0', side='top')
         self.select_setting_labelframe = ttk.Labelframe(self.inside_file_frame)
         self.select_setting_combobox = ttk.Combobox(self.select_setting_labelframe)
         self.select_setting_combobox.configure(state='readonly')
@@ -61,10 +61,10 @@ class ChangeSettingMainApp:
         self.select_setting_button.pack(side='bottom')
         self.select_setting_button.bind('<Button-1>', lambda event: ChangeSettingMainApp.switch_to_possible_values(self))
         self.select_setting_labelframe.configure(height='200', text="Select the option you want to change it's value", width='200')
-        self.select_setting_labelframe.pack(side='bottom')
+        self.select_setting_labelframe.pack(padx='7', side='bottom')
         self.file_description_label = ttk.Label(self.inside_file_frame)
         self.file_description_label.configure(text=self.file_description_part_1)
-        self.file_description_label.pack(padx='7', pady='12', side='left')
+        self.file_description_label.pack(padx='7', pady='7 12', side='left')
         self.inside_file_frame.configure(height='500', width='500')
         self.inside_file_frame.pack(side='top')
         self.inside_file_frame.pack_forget()
@@ -75,6 +75,12 @@ class ChangeSettingMainApp:
         self.back_to_inside_file_button.configure(text='Back')
         self.back_to_inside_file_button.pack(anchor='w', side='top')
         self.back_to_inside_file_button.bind('<Button-1>', lambda event: ChangeSettingMainApp.switch_to_inside_file(self))
+        self.possible_value_sparator = ttk.Separator(self.possible_values_frame)
+        self.possible_value_sparator.configure(orient='horizontal')
+        self.possible_value_sparator.pack(expand='true', fill='x', pady='5 0', side='top')
+        self.possible_values_current_label = ttk.Label(self.possible_values_frame)
+        self.possible_values_current_label.configure(text='Current value is: ')
+        self.possible_values_current_label.pack(anchor='w', expand='true', padx='7', pady='5 0', side='top')
         self.select_value_labelframe = ttk.Labelframe(self.possible_values_frame)
         self.select_value_combobox = ttk.Combobox(self.select_value_labelframe)
         self.select_value_combobox.configure(state='readonly')
@@ -97,7 +103,7 @@ class ChangeSettingMainApp:
         self.back_from_generic_value_button.bind('<Button-1>', lambda event: ChangeSettingMainApp.switch_to_before_set_value(self))
         self.separator1 = ttk.Separator(self.generic_value_frame)
         self.separator1.configure(orient='horizontal')
-        self.separator1.pack(fill='x', side='top')
+        self.separator1.pack(fill='x', pady='5 0', side='top')
         self.generic_value_label = ttk.Label(self.generic_value_frame)
         self.generic_value_label.configure(text='Enter the new value:')
         self.generic_value_label.pack(padx='15', pady='8', side='top')
@@ -119,7 +125,7 @@ class ChangeSettingMainApp:
         self.back_from_numeric_value_button.bind('<Button-1>', lambda event: ChangeSettingMainApp.switch_to_before_set_value(self))
         self.separator2 = ttk.Separator(self.numeric_value_frame)
         self.separator2.configure(orient='horizontal')
-        self.separator2.pack(fill='x', side='top')
+        self.separator2.pack(fill='x', pady='5 0', side='top')
         self.numeric_value_spinbox = ttk.Spinbox(self.numeric_value_frame)
         _text_ = '''Choose the new number'''
         self.numeric_value_spinbox.delete('0', 'end')
@@ -127,7 +133,7 @@ class ChangeSettingMainApp:
         self.numeric_value_spinbox.pack(padx='15', pady='8', side='top')
         self.numeric_value_submit_button = ttk.Button(self.numeric_value_frame)
         self.numeric_value_submit_button.configure(text='Submit')
-        self.numeric_value_submit_button.pack(side='top')
+        self.numeric_value_submit_button.pack(pady='0 5', side='top')
         self.numeric_value_submit_button.bind('<Button-1>', lambda event: ChangeSettingMainApp.submit_numeric_value(self))
         self.numeric_value_frame.configure(height='500', width='500')
         self.numeric_value_frame.pack(side='top')
@@ -186,14 +192,18 @@ class ChangeSettingMainApp:
             if os.path.isfile(path + '.xml'):
                 self.has_dot_xml = True
 
-                file_desciption  = get.file_description(path)
+                file_description = get.file_description(path)
             
-                if file_desciption != None:
-                    file_desciption = self.file_description_part_1 + file_desciption
-                else:
-                    file_desciption = ''
+                if file_description != None:
+                    file_description = self.file_description_part_1 + file_description
 
-                self.file_description_label.configure(text=file_desciption)
+                    file_description = file_description.replace('\n', ' ')
+                    file_description = textwrap.fill(file_description, width=75)
+
+                else:
+                    file_description = ''
+
+                self.file_description_label.configure(text=file_description)
 
             else:
                 self.file_description_label.configure(text='Caution: .setting.xml file missing, no additional data is provided for this setting!')
@@ -206,20 +216,16 @@ class ChangeSettingMainApp:
                 if comment != None:
                     option_list[i] = option_list[i] + ': ' + comment
 
-            file_desciption  = get.file_description(path)
-            
-            if file_desciption != None:
-                file_desciption = self.file_description_part_1 + file_desciption
-            else:
-                file_desciption = ''
-
-            self.select_setting_combobox.configure(values=setting_list)
+            self.select_setting_combobox.configure(values=option_list)
             self.select_setting_combobox.current(0)
             self.inside_file_frame.pack(side='top')
     
     def switch_to_possible_values(self):
         path = self.file_combobox.get()
         option = get.option_names_in_file(path)[self.select_setting_combobox.current()]
+
+        self.possible_values_current_label.configure(text = self.current_value_part_1 + extract.get_value(path, option)['Value'])
+
         self.possible_values = []
 
         self.inside_file_frame.pack_forget()
@@ -244,18 +250,14 @@ class ChangeSettingMainApp:
 
         else:
             self.generic_value_entery.delete(0, 'end')
-            self.value_frame_scource = value_frame_scources.INSIDE_FILE
             self.generic_value_frame.pack(side='top')
 
 
     def switch_to_before_set_value(self):
-        if self.value_frame_scource == value_frame_scources.INSIDE_FILE:
             self.generic_value_frame.pack_forget()
-            self.switch_to_inside_file()
-        else:
             self.numeric_value_frame.pack_forget()
-            self.generic_value_frame.pack_forget()
-            self.switch_to_possible_values()
+            self.switch_to_inside_file()
+
 
     def submit_generic_value(self):
         value = self.generic_value_entery.get()
@@ -285,7 +287,6 @@ class ChangeSettingMainApp:
         
         if self.select_value_combobox.current() == len(self.possible_values) - 1:
             self.generic_value_entery.delete(0, 'end')
-            self.value_frame_scource = value_frame_scources.POSSIBLE_VALUES
             self.generic_value_frame.pack(side='top')
         else:
 
@@ -296,7 +297,6 @@ class ChangeSettingMainApp:
                                                         
             if 'min' in value:# Check if value is ranged
                 self.numeric_value_spinbox.delete(0, 'end')
-                self.value_frame_scource = value_frame_scources.POSSIBLE_VALUES
 
                 min = max = step = initial = 0
                 style = ''
@@ -324,7 +324,7 @@ class ChangeSettingMainApp:
 
             elif 'name' in value: # Value is a single choice
                 response = set.option_value(path, option, value['name'])
-
+                
                 if response == 200:
                     self.switch_to_before_set_value()
                 elif response == 701:

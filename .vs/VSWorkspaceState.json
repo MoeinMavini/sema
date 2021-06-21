@@ -2,6 +2,8 @@
   "ExpandedNodes": [
     "",
     "\\change_setting",
+    "\\example",
+    "\\example\\Funny_Strings",
     "\\sema",
     "\\sema\\common",
     "\\sema\\manage_setting"

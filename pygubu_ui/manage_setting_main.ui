@@ -12,7 +12,7 @@
         <property name="text" translatable="yes">Welcome to sema setting maker, 
 This is the developer tool to make settings and edit created settings.
 
-Use buttons below to create or open a setting maker setting.</property>
+Use buttons below to create or open a setting maker file.</property>
         <layout manager="pack">
           <property name="padx">10</property>
           <property name="pady">10</property>

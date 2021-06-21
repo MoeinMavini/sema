@@ -4,7 +4,7 @@
 #This setting is for the characteristics of the
 #ascending-descending shape.
 #Is the shape ascending or descending
-Ascending:false
+Ascending:true
 #Character that is used for the shape
 Char:*
 #Lenght of the biggest line

@@ -22,6 +22,7 @@
         <property name="orient">horizontal</property>
         <layout manager="pack">
           <property name="fill">x</property>
+          <property name="pady">5 0</property>
           <property name="propagate">True</property>
           <property name="side">top</property>
         </layout>
@@ -42,6 +43,7 @@
       <object class="ttk.Button" id="numeric_value_submit_button">
         <property name="text" translatable="yes">Submit</property>
         <layout manager="pack">
+          <property name="pady">0 5</property>
           <property name="propagate">True</property>
           <property name="side">top</property>
         </layout>

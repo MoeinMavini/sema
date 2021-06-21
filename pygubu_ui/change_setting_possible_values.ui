@@ -18,6 +18,31 @@
       </object>
     </child>
     <child>
+      <object class="ttk.Separator" id="possible_value_sparator">
+        <property name="orient">horizontal</property>
+        <layout manager="pack">
+          <property name="expand">true</property>
+          <property name="fill">x</property>
+          <property name="pady">5 0</property>
+          <property name="propagate">True</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="possible_values_current_label">
+        <property name="text" translatable="yes">Current value is: </property>
+        <layout manager="pack">
+          <property name="anchor">w</property>
+          <property name="expand">true</property>
+          <property name="padx">7</property>
+          <property name="pady">5 0</property>
+          <property name="propagate">True</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+    <child>
       <object class="ttk.Labelframe" id="select_value_labelframe">
         <property name="height">200</property>
         <property name="text" translatable="yes">Choose the new value</property>

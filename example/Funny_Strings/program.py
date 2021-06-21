@@ -52,7 +52,9 @@ else:
 
 
 print('asd-dsc char: ' + char1 + ', rectangle char: ' + char2 + ', shape 1 is ', end = '')
+
 print('ascending,' if is_ascending == 'true' else 'dscending,')
+
 print('shape 1 has max lenght of ' + asd_dsc_lenght + ', it forms from ' + asd_dsc_position +
      ',\nrectangle has the lenght and width of ' + rectangle_lenght + ', ' + rectangle_width + '.')
 
